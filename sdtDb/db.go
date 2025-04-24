@@ -1,4 +1,4 @@
-package ftdb
+package sdtdb
 
 import (
 	"database/sql"
@@ -21,37 +21,40 @@ type DatabaseType struct {
 
 // structure to hold all db connection details used in this program
 type AllUsedDatabases struct {
-	PM    DatabaseType
-	ADMIN DatabaseType
-	HOP   DatabaseType
+	SDTDB DatabaseType
 }
+
+var Gdb *sql.DB
 
 // ---------------------------------------------------------------------------------
 // function opens the db connection and return connection variable
 // ---------------------------------------------------------------------------------
-func LocalDbConnect(DBtype string) (*sql.DB, error) {
+func InitDb() {
 	DbDetails := new(AllUsedDatabases)
 	DbDetails.Init()
 
-	var db *sql.DB
-	var err error
+	var lErr error
 	var dataBaseConnection DatabaseType
 	// get connection details
-	if DBtype == DbDetails.PM.DB {
-		dataBaseConnection = DbDetails.PM
-	} else if DBtype == DbDetails.HOP.DB {
-		dataBaseConnection = DbDetails.HOP
-	} else if DBtype == DbDetails.ADMIN.DB {
-		dataBaseConnection = DbDetails.ADMIN
+	if DbDetails.SDTDB.DB == "SDTDB" {
+		dataBaseConnection = DbDetails.SDTDB
 	}
 	// log.Println("localDBtype", localDBtype)
 	// log.Println("dataBaseConnection", dataBaseConnection)
 
 	// Prepare connection string
 
-	connString := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", dataBaseConnection.User, dataBaseConnection.Password, dataBaseConnection.Server, dataBaseConnection.Port, dataBaseConnection.Database)
+	prepareConnString := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", dataBaseConnection.User, dataBaseConnection.Password, dataBaseConnection.Server, dataBaseConnection.Port, dataBaseConnection.Database)
 
-	return db, err
+	Gdb, lErr = sql.Open("mysql", prepareConnString)
+	if lErr != nil {
+		log.Fatalf("Error opening database: %v", lErr)
+	}
+
+	// Test connection
+	if lErr := Gdb.Ping(); lErr != nil {
+		log.Fatalf("Error connecting to database: %v", lErr)
+	}
 }
 
 // --------------------------------------------------------------------

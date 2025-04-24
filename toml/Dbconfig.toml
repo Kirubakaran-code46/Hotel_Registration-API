@@ -1,12 +1,22 @@
 #Db connection
-NAME = "prashanth"
-HOST="localhost"
-USER="root"
-PASSWORD="04021999"
-PORT="3306"
+#NAME = "prashanth"
+#HOST="localhost"
+#USER="root"
+#PASSWORD="04021999"
+#PORT="3306"
 
 #NAME = "database-2"
 #HOST="database2.cfiwsouam2g0.ap-south-1.rds.amazonaws.com"
 #USER="admin"
 #PASSWORD="04021999pra"
 #PORT="3306"
+
+#######################################
+
+#Kirubakaran Db connection
+DBNAME = "sdt_db"
+HOST="localhost"
+USER="root"
+PASSWORD="root"
+PORT="3306"
+DBTYPE="mariadb"

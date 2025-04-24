@@ -1,8 +1,8 @@
 package logfiledownload
 
 import (
+	"SDT_ADMIN_API/common"
 	"encoding/json"
-	"fcs23pkg/common"
 	"fmt"
 	"log"
 	"net/http"
@@ -29,12 +29,14 @@ type Response struct {
 //}
 
 // On Error
-//{
-//  Status:"E"
+//
+//	{
+//	 Status:"E"
+//
 // ErrMsg:Error
-//}
-//Author: Prabhaharan S
-//Date: 13JUN2023
+// }
+// Author: Prabhaharan S
+// Date: 13JUN2023
 func LogFileDownload(w http.ResponseWriter, r *http.Request) {
 	log.Println("LogFileDownload+")
 	origin := r.Header.Get("Origin")
@@ -144,8 +146,8 @@ func LogFileDownload(w http.ResponseWriter, r *http.Request) {
 // Purpose:This method is used to Read a file
 // Parameter:filePath
 // Response:[]byte,error
-//Author: Prabhaharan S
-//Date: 13JUN2023
+// Author: Prabhaharan S
+// Date: 13JUN2023
 func ReadRawFileFromPath(filePath string) ([]byte, error) {
 	log.Println("ReadRawFileFromPath+")
 	log.Println("filePath:", filePath)

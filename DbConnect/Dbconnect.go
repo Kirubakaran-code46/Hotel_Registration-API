@@ -1,7 +1,7 @@
 package DbConnect
 
 import (
-	"HOP_API_DEV/common"
+	"SDT_ADMIN_API/common"
 	"database/sql"
 	"fmt"
 	"log"

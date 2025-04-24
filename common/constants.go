@@ -24,6 +24,7 @@ const (
 
 	ABHICookieName       = "ftab_pt"
 	ABHIClientCookieName = "ftab_ud"
+	ABHIDomain           = ""
 	//--------------OTHER COMMON CONSTANTS ------------------------
 	CookieMaxAge = 300
 

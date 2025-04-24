@@ -1,12 +1,12 @@
 package lookup
 
 import (
-	"database/sql"
+	"SDT_ADMIN_API/helpers"
+	database "SDT_ADMIN_API/sdtDb"
 	"encoding/json"
 	"fcs23pkg/apps/validation/apiaccess"
-	"fcs23pkg/common"
-	"fcs23pkg/ftdb"
-	"fcs23pkg/helpers"
+
+	"SDT_ADMIN_API/common"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -103,39 +103,29 @@ func GetLookUpDetails(w http.ResponseWriter, r *http.Request) {
 			// 	lResp.ErrMsg = "Error: 2" + lErr2.Error()
 			// } else {
 
-			// To Establish A database connection,call LocalDbConnect Method
-			lDb, lErr2 := ftdb.LocalDbConnect(ftdb.IPODB)
-			if lErr2 != nil {
-				lResp.Status = "E"
-				log.Println("Err 2", lErr2)
-				lResp.ErrMsg = "Error: 2" + lErr2.Error()
-			} else {
-
-				defer lDb.Close()
-				// ! To get the headerId,code,description,attribute
-				CoreString := `select id,Code ,description ,nvl(Attribute1, '') Attribute1,nvl(createdBy, '') createdBy ,nvl(createdDate, '') createdDate ,nvl(updatedBy, '') updatedBy ,nvl(updatedDate, '')  updatedDate
+			// ! To get the headerId,code,description,attribute
+			CoreString := `select id,Code ,description ,nvl(Attribute1, '') Attribute1,nvl(createdBy, '') createdBy ,nvl(createdDate, '') createdDate ,nvl(updatedBy, '') updatedBy ,nvl(updatedDate, '')  updatedDate
 				from xx_lookup_details
 				where headerid = ? `
-				lRows, lErr3 := lDb.Query(CoreString, lInput.HeaderId)
-				if lErr3 != nil {
-					lResp.Status = "E"
-					log.Println("Err 3", lResp.ErrMsg)
-					lResp.ErrMsg = "Error: 3" + lErr3.Error()
-				} else {
-					//This for loop is used to collect the records from the database and store them in structure
-					for lRows.Next() {
-						lErr4 := lRows.Scan(&lInput.ID, &lInput.Code, &lInput.Description, &lInput.Attribute, &lInput.Created_By, &lInput.Created_Date, &lInput.Updated_By, &lInput.Updated_Date)
-						if lErr4 != nil {
-							lResp.Status = "E"
-							log.Println("Err 4", lResp.ErrMsg)
-							lResp.ErrMsg = "Error: 4" + lErr4.Error()
-						} else {
-							// Append the LookUpDetails Records into lResp DetailsArr Array
-							// log.Println("lInput", lInput)
-							lResp.DetailsArr = append(lResp.DetailsArr, lInput)
-							// log.Println("DetailsArr", lResp.DetailsArr)
-							lResp.Status = "S"
-						}
+			lRows, lErr3 := database.Gdb.Query(CoreString, lInput.HeaderId)
+			if lErr3 != nil {
+				lResp.Status = "E"
+				log.Println("Err 3", lResp.ErrMsg)
+				lResp.ErrMsg = "Error: 3" + lErr3.Error()
+			} else {
+				//This for loop is used to collect the records from the database and store them in structure
+				for lRows.Next() {
+					lErr4 := lRows.Scan(&lInput.ID, &lInput.Code, &lInput.Description, &lInput.Attribute, &lInput.Created_By, &lInput.Created_Date, &lInput.Updated_By, &lInput.Updated_Date)
+					if lErr4 != nil {
+						lResp.Status = "E"
+						log.Println("Err 4", lResp.ErrMsg)
+						lResp.ErrMsg = "Error: 4" + lErr4.Error()
+					} else {
+						// Append the LookUpDetails Records into lResp DetailsArr Array
+						// log.Println("lInput", lInput)
+						lResp.DetailsArr = append(lResp.DetailsArr, lInput)
+						// log.Println("DetailsArr", lResp.DetailsArr)
+						lResp.Status = "S"
 					}
 				}
 			}
@@ -155,13 +145,13 @@ func GetLookUpDetails(w http.ResponseWriter, r *http.Request) {
 Pupose:This Function is used to Add new LookUp details data into our database table ....
 Request:
 
-{
-	"id": "1",
-		"Code" :"10",
-		"HeaderId" :"50",
-		"Description":"wetgrh",
-		"attribute" :"2",
-}
+	{
+		"id": "1",
+			"Code" :"10",
+			"HeaderId" :"50",
+			"Description":"wetgrh",
+			"attribute" :"2",
+	}
 
 lResponse:
 
@@ -225,45 +215,36 @@ func AddLookUpDetails(w http.ResponseWriter, r *http.Request) {
 				} else {
 					lInput.User = lClientId
 
-					// To Establish A database connection,call LocalDbConnect Method
-					lDb, lErr4 := ftdb.LocalDbConnect(ftdb.IPODB)
+					// ! To insert the headerId,code,description,attribute
+
+					// CoreString := `insert into xx_lookup_details(headerid,Code , description ,Attribute1,  createdBy, createdDate, updatedBy, updatedDate)
+					// values(?,?,?,?,?,Now(),?,Now())`
+					// _, lErr3 := lDb.Exec(CoreString, &lInput.HeaderId, &lInput.Code, &lInput.Description, &lInput.Attribute, &lInput.User, &lInput.User)
+					// if lErr3 != nil {
+					// 	lResp.Status = "E"
+					// 	log.Println("Err 3", lResp.ErrMsg)
+					// 	lResp.ErrMsg = "Error: 3" + lErr3.Error()
+					// } else {
+					// 	lResp.Status = "S"
+					// }
+					lExistsVal, lErr4 := ExistsHeaderId(lInput)
 					if lErr4 != nil {
 						lResp.Status = "E"
-						log.Println("Err 4", lErr4)
-						lResp.ErrMsg = "Error: 4" + lErr4.Error()
+						log.Println("Err 3", lResp.ErrMsg)
+						lResp.ErrMsg = "Error: 3" + lErr4.Error()
 					} else {
-						defer lDb.Close()
-						// ! To insert the headerId,code,description,attribute
-
-						// CoreString := `insert into xx_lookup_details(headerid,Code , description ,Attribute1,  createdBy, createdDate, updatedBy, updatedDate)
-						// values(?,?,?,?,?,Now(),?,Now())`
-						// _, lErr3 := lDb.Exec(CoreString, &lInput.HeaderId, &lInput.Code, &lInput.Description, &lInput.Attribute, &lInput.User, &lInput.User)
-						// if lErr3 != nil {
-						// 	lResp.Status = "E"
-						// 	log.Println("Err 3", lResp.ErrMsg)
-						// 	lResp.ErrMsg = "Error: 3" + lErr3.Error()
-						// } else {
-						// 	lResp.Status = "S"
-						// }
-						lExistsVal, lErr4 := ExistsHeaderId(lDb, lInput)
-						if lErr4 != nil {
+						if lExistsVal == "Y" {
 							lResp.Status = "E"
-							log.Println("Err 3", lResp.ErrMsg)
-							lResp.ErrMsg = "Error: 3" + lErr4.Error()
-						} else {
-							if lExistsVal == "Y" {
+							log.Println("Err 4 : This Code is already exists", lResp.ErrMsg)
+							lResp.ErrMsg = "This Code is already exists"
+						} else if lExistsVal == "N" {
+							lErr5 := InsertDetailsValue(lInput)
+							if lErr5 != nil {
 								lResp.Status = "E"
-								log.Println("Err 4 : This Code is already exists", lResp.ErrMsg)
-								lResp.ErrMsg = "This Code is already exists"
-							} else if lExistsVal == "N" {
-								lErr5 := InsertDetailsValue(lDb, lInput)
-								if lErr5 != nil {
-									lResp.Status = "E"
-									log.Println("Err 4", lErr5)
-									lResp.ErrMsg = "Error: 4" + lErr5.Error()
-								} else {
-									lResp.Status = "S"
-								}
+								log.Println("Err 4", lErr5)
+								lResp.ErrMsg = "Error: 4" + lErr5.Error()
+							} else {
+								lResp.Status = "S"
 							}
 						}
 					}
@@ -280,7 +261,7 @@ func AddLookUpDetails(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("AddLookUpDetails(-)")
 }
-func InsertDetailsValue(lDb *sql.DB, lInput LookUpDetails) error {
+func InsertDetailsValue(lInput LookUpDetails) error {
 	log.Println("InsertDetailsValue(+)")
 
 	// log.Println("insert input", lInput)
@@ -288,7 +269,7 @@ func InsertDetailsValue(lDb *sql.DB, lInput LookUpDetails) error {
 	// ! To insert the LookUpHeader code,description
 	CoreString := `insert into xx_lookup_details(headerid,Code , description ,Attribute1,  createdBy, createdDate, updatedBy, updatedDate)
 	values(?,?,?,?,?,Now(),?,Now())`
-	_, lErr := lDb.Exec(CoreString, &lInput.HeaderId, &lInput.Code, &lInput.Description, &lInput.Attribute, &lInput.User, &lInput.User)
+	_, lErr := database.Gdb.Exec(CoreString, &lInput.HeaderId, &lInput.Code, &lInput.Description, &lInput.Attribute, &lInput.User, &lInput.User)
 	if lErr != nil {
 		log.Println("error1")
 		return lErr
@@ -296,7 +277,7 @@ func InsertDetailsValue(lDb *sql.DB, lInput LookUpDetails) error {
 	log.Println("InsertDetailsValue(-)")
 	return nil
 }
-func ExistsHeaderId(db *sql.DB, lInput LookUpDetails) (string, error) {
+func ExistsHeaderId(lInput LookUpDetails) (string, error) {
 	log.Println("ExistsHeaderId(+)")
 
 	var ExistVal string
@@ -304,7 +285,7 @@ func ExistsHeaderId(db *sql.DB, lInput LookUpDetails) (string, error) {
 	from xx_lookup_details 
 	WHERE headerid = ? and Code=?`
 
-	rows, err := db.Query(CoreString, lInput.HeaderId, lInput.Code)
+	rows, err := database.Gdb.Query(CoreString, lInput.HeaderId, lInput.Code)
 	if err != nil {
 		log.Println(err)
 		return ExistVal, err
@@ -325,13 +306,13 @@ func ExistsHeaderId(db *sql.DB, lInput LookUpDetails) (string, error) {
 Pupose:This Function is used to Update new LookUp details data into our database table ....
 Request:
 
-{
-	"id": "1",
-		"Code" :"10",
-		"HeaderId" :"50",
-		"Description":"wetgrh",
-		"attribute" :"2",
-}
+	{
+		"id": "1",
+			"Code" :"10",
+			"HeaderId" :"50",
+			"Description":"wetgrh",
+			"attribute" :"2",
+	}
 
 lResponse:
 
@@ -378,13 +359,13 @@ func UpdateLookUpDetails(w http.ResponseWriter, r *http.Request) {
 			log.Println("SPFC01", lErr1)
 			lResp.Status = common.ErrorCode
 			lResp.ErrMsg = "SPFC01" + lErr1.Error()
-			fmt.Fprintf(w, helpers.GetErrorString("SPFC01", "UserDetails not Found"))
+			fmt.Fprintf(w, helpers.GetError_String("SPFC01", "UserDetails not Found"))
 			return
 		} else {
 			if lClientId == "" {
 				lResp.Status = common.ErrorCode
 				lResp.ErrMsg = "SPFC02 / UserDetails not Found"
-				fmt.Fprintf(w, helpers.GetErrorString("SPFC02", "UserDetails not Found"))
+				fmt.Fprintf(w, helpers.GetError_String("SPFC02", "UserDetails not Found"))
 				return
 			}
 		}
@@ -412,46 +393,37 @@ func UpdateLookUpDetails(w http.ResponseWriter, r *http.Request) {
 				// } else {
 				lInput.User = lClientId
 
-				// To Establish A database connection,call LocalDbConnect Method
-				lDb, lErr4 := ftdb.LocalDbConnect(ftdb.IPODB)
-				if lErr4 != nil {
+				// // ! To update the Code,Description,attribute
+				// CoreString := `update xx_lookup_details
+				// set Code = ?,description = ?,Attribute1 = ?,updatedBy = 'AutoBot',updatedDate= Now()
+				// where id = ?`
+				// _, lErr3 := lDb.Exec(CoreString, &lInput.Code, &lInput.Description, &lInput.Attribute, &lInput.ID)
+				// if lErr3 != nil {
+				// 	lResp.Status = "E"
+				// 	log.Println("Err 3", lResp.ErrMsg)
+				// 	lResp.ErrMsg = "Error: 3" + lErr3.Error()
+				// } else {
+				// 	lResp.Status = "S"
+				// }
+				lExistsCode, lErr5 := ExistsDetailsCode(lInput)
+				if lErr5 != nil {
 					lResp.Status = "E"
-					log.Println("Err 4", lErr4)
-					lResp.ErrMsg = "Error: 4" + lErr4.Error()
+					log.Println("Err 5", lResp.ErrMsg)
+					lResp.ErrMsg = "Error: 5" + lErr5.Error()
 				} else {
-					defer lDb.Close()
-					// // ! To update the Code,Description,attribute
-					// CoreString := `update xx_lookup_details
-					// set Code = ?,description = ?,Attribute1 = ?,updatedBy = 'AutoBot',updatedDate= Now()
-					// where id = ?`
-					// _, lErr3 := lDb.Exec(CoreString, &lInput.Code, &lInput.Description, &lInput.Attribute, &lInput.ID)
-					// if lErr3 != nil {
-					// 	lResp.Status = "E"
-					// 	log.Println("Err 3", lResp.ErrMsg)
-					// 	lResp.ErrMsg = "Error: 3" + lErr3.Error()
-					// } else {
-					// 	lResp.Status = "S"
-					// }
-					lExistsCode, lErr5 := ExistsDetailsCode(lDb, lInput)
-					if lErr5 != nil {
+					log.Println("lExistsCode", lExistsCode)
+					if lExistsCode == "Y" {
 						lResp.Status = "E"
-						log.Println("Err 5", lResp.ErrMsg)
-						lResp.ErrMsg = "Error: 5" + lErr5.Error()
-					} else {
-						log.Println("lExistsCode", lExistsCode)
-						if lExistsCode == "Y" {
+						log.Println("Err 5: This Code is already exists", lResp.ErrMsg)
+						lResp.ErrMsg = "This Code is already exists"
+					} else if lExistsCode == "N" {
+						lErr6 := UpdateDetailsValue(lInput)
+						if lErr6 != nil {
 							lResp.Status = "E"
-							log.Println("Err 5: This Code is already exists", lResp.ErrMsg)
-							lResp.ErrMsg = "This Code is already exists"
-						} else if lExistsCode == "N" {
-							lErr6 := UpdateDetailsValue(lDb, lInput)
-							if lErr6 != nil {
-								lResp.Status = "E"
-								log.Println("Err 6", lResp.ErrMsg)
-								lResp.ErrMsg = "Error: 4" + lErr6.Error()
-							} else {
-								lResp.Status = "S"
-							}
+							log.Println("Err 6", lResp.ErrMsg)
+							lResp.ErrMsg = "Error: 4" + lErr6.Error()
+						} else {
+							lResp.Status = "S"
 						}
 					}
 				}
@@ -468,7 +440,7 @@ func UpdateLookUpDetails(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("UpdateLookUpDetails(-)")
 }
-func ExistsDetailsCode(db *sql.DB, lInput LookUpDetails) (string, error) {
+func ExistsDetailsCode(lInput LookUpDetails) (string, error) {
 	log.Println("ExistsDetailsCode(+)")
 
 	var ExistCode string
@@ -477,7 +449,7 @@ func ExistsDetailsCode(db *sql.DB, lInput LookUpDetails) (string, error) {
 	WHERE id != ` + lInput.ID + ` and Code = '` + lInput.Code + `' and headerid = '` + lInput.HeaderId + `'`
 
 	log.Println(CoreString)
-	rows, err := db.Query(CoreString)
+	rows, err := database.Gdb.Query(CoreString)
 	if err != nil {
 		log.Println(err)
 		return ExistCode, err
@@ -493,7 +465,7 @@ func ExistsDetailsCode(db *sql.DB, lInput LookUpDetails) (string, error) {
 	}
 	return ExistCode, err
 }
-func UpdateDetailsValue(lDb *sql.DB, lInput LookUpDetails) error {
+func UpdateDetailsValue(lInput LookUpDetails) error {
 	log.Println("UpdateDetailsValue(+)")
 	log.Println("lInput", lInput)
 
@@ -501,7 +473,7 @@ func UpdateDetailsValue(lDb *sql.DB, lInput LookUpDetails) error {
 	CoreString := `update xx_lookup_details
 	set Code = ?,description = ?,Attribute1 = ?,updatedBy = ?,updatedDate= Now()
 	where id = ?`
-	_, lErr := lDb.Exec(CoreString, &lInput.Code, &lInput.Description, &lInput.Attribute, &lInput.User, &lInput.ID)
+	_, lErr := database.Gdb.Exec(CoreString, &lInput.Code, &lInput.Description, &lInput.Attribute, &lInput.User, &lInput.ID)
 	if lErr != nil {
 		log.Println("error1")
 		return lErr
