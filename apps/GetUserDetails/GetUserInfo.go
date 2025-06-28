@@ -19,6 +19,7 @@ type Response struct {
 	RoomTypesInfo    []common.RoomType            `json:"roomTypesInfo"`
 	MealsInfo        common.MealsInfo             `json:"mealsInfo"`
 	AvailabilityInfo common.AvailabilityInfo      `json:"availabilityInfo"`
+	PoliciesInfo     common.PoliciesInfo          `json:"policiesInfo"`
 }
 
 type ReqStruct struct {
@@ -98,6 +99,12 @@ func GetUserDetailsAPI(w http.ResponseWriter, r *http.Request) {
 			}
 
 		} else if strings.EqualFold(lReq.Stage, "Policies") {
+			lResponse.PoliciesInfo, lErr = GetPolicieInfo(lDebug, lReq.ClientId)
+			if lErr != nil {
+				lDebug.Log(helpers.Elog, "IBDAPI002", lErr.Error())
+				fmt.Fprint(w, helpers.GetError_String("IBDAPI002", lErr.Error()))
+				return
+			}
 
 		} else if strings.EqualFold(lReq.Stage, "Docs") {
 
@@ -278,4 +285,40 @@ func GetAvailabilityInfo(pDebug *helpers.HelperStruct, pReq string) (common.Avai
 
 	pDebug.Log(helpers.Statement, "GetAvailabilityInfo (-)")
 	return lAvailabilityInfo, nil
+}
+
+// GET POLICIES INFORMATION
+
+func GetPolicieInfo(pDebug *helpers.HelperStruct, pReq string) (common.PoliciesInfo, error) {
+	pDebug.Log(helpers.Statement, "GetPolicieInfo (+)")
+
+	var lPoliciesInfo common.PoliciesInfo
+
+	lCoreString := ` SELECT check_in, check_out, checkinout_policy, CancellationPolicy, allow_unmarriedCouples, allow_minor_guest, allow_onlymale_guests, allow_smoking, allow_parties, allow_invite_guests, wheelchar_accessible, allow_pets, accepted_proofs, additional_propertyrules
+	FROM property_policiesinfo where Uid =? and isActive ='Y'`
+
+	lRows, lErr := database.Gdb.Query(lCoreString, pReq)
+
+	if lErr != nil {
+		pDebug.Log(helpers.Elog, "GPI001", lErr.Error())
+		helpers.ErrReturn(lErr)
+	}
+	var lTypeOfProofsArrStr string
+
+	for lRows.Next() {
+		lErr = lRows.Scan(&lPoliciesInfo.Check_in, &lPoliciesInfo.Check_out, &lPoliciesInfo.Checkinout_policy, &lPoliciesInfo.CancellationPolicy, &lPoliciesInfo.Allow_unmarriedCouples, &lPoliciesInfo.Allow_minor_guest, &lPoliciesInfo.Allow_onlymale_guests, &lPoliciesInfo.Allow_smoking, &lPoliciesInfo.Allow_parties, &lPoliciesInfo.Allow_invite_guests, &lPoliciesInfo.Wheelchar_accessible, &lPoliciesInfo.Allow_pets, &lTypeOfProofsArrStr, &lPoliciesInfo.Additional_propertyrules)
+		if lErr != nil {
+			pDebug.Log(helpers.Elog, "GPI002", lErr.Error())
+			helpers.ErrReturn(lErr)
+		}
+
+		if strings.TrimSpace(lTypeOfProofsArrStr) == "" {
+			lPoliciesInfo.Accepted_proofs = []string{}
+		} else {
+			lPoliciesInfo.Accepted_proofs = strings.Split(lTypeOfProofsArrStr, ",")
+		}
+	}
+
+	pDebug.Log(helpers.Statement, "GetPolicieInfo (-)")
+	return lPoliciesInfo, nil
 }

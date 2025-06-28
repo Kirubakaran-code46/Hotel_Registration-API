@@ -65,3 +65,21 @@ type AvailabilityInfo struct {
 	StartDate string `json:"startDate"`
 	EndDate   string `json:"endDate"`
 }
+
+type PoliciesInfo struct {
+	Uid                      string   `json:"uid"`
+	Check_in                 string   `json:"check_in"`
+	Check_out                string   `json:"check_out"`
+	Checkinout_policy        string   `json:"checkinout_policy"`
+	CancellationPolicy       string   `json:"cancellationPolicy"`
+	Allow_unmarriedCouples   string   `json:"allow_unmarriedCouples"`
+	Allow_minor_guest        string   `json:"allow_minor_guest"`
+	Allow_onlymale_guests    string   `json:"allow_onlymale_guests"`
+	Allow_smoking            string   `json:"allow_smoking"`
+	Allow_parties            string   `json:"allow_parties"`
+	Allow_invite_guests      string   `json:"allow_invite_guests"`
+	Wheelchar_accessible     string   `json:"wheelchar_accessible"`
+	Allow_pets               string   `json:"allow_pets"`
+	Accepted_proofs          []string `json:"accepted_proofs"`
+	Additional_propertyrules string   `json:"additional_propertyrules"`
+}
