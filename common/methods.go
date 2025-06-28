@@ -1,9 +1,9 @@
 package common
 
 import (
-	"database/sql"
 	"errors"
 	"log"
+	"net/http"
 	"strings"
 	"time"
 
@@ -19,6 +19,22 @@ func ReadTomlConfig(filename string) interface{} {
 		log.Println(err)
 	}
 	return f
+}
+
+// --------------------------------------------------------------------
+// READ COOKIE
+// --------------------------------------------------------------------
+
+// GetCookieValue reads a cookie by name from the request and returns its value.
+func GetCookieValue(r *http.Request, name string) (string, error) {
+	cookie, err := r.Cookie(name)
+	if err != nil {
+		if errors.Is(err, http.ErrNoCookie) {
+			return "", errors.New("cookie not found")
+		}
+		return "", err
+	}
+	return cookie.Value, nil
 }
 
 // --------------------------------------------------------------------
@@ -89,59 +105,4 @@ func CapitalizeText(input string) string {
 func CustomError(pErrorMsg string) error {
 	err := errors.New(pErrorMsg)
 	return err
-}
-
-func GetLookUpDetails(pDB *sql.DB, pHeaderCode string) (map[string]string, error) {
-	lId := ""
-	lCode := ""
-	lookupDetails := make(map[string]string)
-	lsqlString := `SELECT coalesce (xld.id,'') , coalesce (xld.Code,'')
-	FROM xx_lookup_details xld,xx_lookup_header xlh 
-	where xlh.Code  = '` + pHeaderCode + `' and xlh.id = xld.headerid  ;`
-
-	// log.Println("lsqlString", lsqlString)
-	lRows, lErr := pDB.Query(lsqlString)
-	if lErr != nil {
-		log.Println("CGLD01", lErr)
-		return lookupDetails, lErr
-	} else {
-		for lRows.Next() {
-			lErr := lRows.Scan(&lId, &lCode)
-			if lErr != nil {
-				log.Println("CGLD02", lErr)
-				return lookupDetails, lErr
-			} else {
-				lookupDetails[lId] = lCode
-			}
-		}
-	}
-	// log.Println("lookupDetails", lookupDetails)
-	return lookupDetails, nil
-}
-
-func HandleNull[T any](data []T) []T {
-	if len(data) == 0 {
-		// Create an empty slice of the same type
-		return []T{}
-	}
-	return data
-}
-
-func ConvertArrayToString(array []string) string {
-	var builder strings.Builder
-
-	for i, str := range array {
-		builder.WriteString("'")
-		builder.WriteString(str)
-		builder.WriteString("'")
-		// Add comma if it's not the last element
-		if i != len(array)-1 {
-			builder.WriteString(",")
-		}
-	}
-	if array == nil {
-		return "''"
-	}
-
-	return builder.String()
 }

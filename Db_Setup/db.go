@@ -1,4 +1,4 @@
-package sdtdb
+package dbsetup
 
 import (
 	"database/sql"

@@ -1,7 +1,7 @@
-package sdtdb
+package dbsetup
 
 import (
-	"SDT_ADMIN_API/common"
+	"HOTEL-REGISTRY_API/common"
 	"fmt"
 	"strconv"
 )

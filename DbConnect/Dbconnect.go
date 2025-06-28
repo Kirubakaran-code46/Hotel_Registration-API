@@ -1,7 +1,7 @@
 package DbConnect
 
 import (
-	"SDT_ADMIN_API/common"
+	"HOTEL-REGISTRY_API/common"
 	"database/sql"
 	"fmt"
 	"log"

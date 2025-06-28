@@ -1,7 +1,7 @@
 package apientry
 
 import (
-	"SDT_ADMIN_API/helpers"
+	"HOTEL-REGISTRY_API/helpers"
 	"net/http"
 )
 

@@ -1,9 +1,9 @@
 package dashboard
 
 import (
-	"SDT_ADMIN_API/common"
-	"SDT_ADMIN_API/helpers"
-	database "SDT_ADMIN_API/sdtDb"
+	database "HOTEL-REGISTRY_API/Db_Setup"
+	"HOTEL-REGISTRY_API/common"
+	"HOTEL-REGISTRY_API/helpers"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -36,12 +36,12 @@ func GetDashBoardDetailsAPI(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		var lResponse Response
 
-		lResponse.Status = common.SuccessCode
+		lResponse.Status = common.SUCCESSCODE
 
 		lDetails, lErr := GetDashDetails(lDebug)
 		if lErr != nil {
 			lDebug.Log(helpers.Elog, "GDDAPI001", lErr.Error())
-			lResponse.Status = common.ErrorCode
+			lResponse.Status = common.ERRORCODE
 			lResponse.ErrMsg = lErr.Error()
 		}
 		lResponse.DashDetails = lDetails
@@ -49,7 +49,7 @@ func GetDashBoardDetailsAPI(w http.ResponseWriter, r *http.Request) {
 		lResp, lErr := json.Marshal(&lResponse)
 		if lErr != nil {
 			lDebug.Log(helpers.Elog, "GDDAPI002", lErr.Error())
-			lResponse.Status = common.ErrorCode
+			lResponse.Status = common.ERRORCODE
 			lResponse.ErrMsg = lErr.Error()
 		}
 		fmt.Fprint(w, string(lResp))

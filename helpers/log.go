@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"SDT_ADMIN_API/common"
+	"HOTEL-REGISTRY_API/common"
 	"encoding/base64"
 	"errors"
 	"fmt"

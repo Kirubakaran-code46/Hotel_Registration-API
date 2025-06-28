@@ -1,9 +1,9 @@
 package roleandtask
 
 import (
-	"SDT_ADMIN_API/common"
-	"SDT_ADMIN_API/helpers"
-	database "SDT_ADMIN_API/sdtDb"
+	database "HOTEL-REGISTRY_API/Db_Setup"
+	"HOTEL-REGISTRY_API/common"
+	"HOTEL-REGISTRY_API/helpers"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -42,8 +42,9 @@ type TaskDetails struct {
 
 type RoleTaskDetails struct {
 	Id          int    `json:"id"`
-	RoleId      string `json:"roleId"`
-	TaskId      string `json:"taskId"`
+	Role        string `json:"role"`
+	Task        string `json:"task"`
+	Description string `json:"description"`
 	CreatedBy   string `json:"createdBy"`
 	CreatedDate string `json:"createdDate"`
 	UpdatedBy   string `json:"updatedBy"`
@@ -65,12 +66,12 @@ func GetRoleAndTaskAPI(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		var lResponse Response
 
-		lResponse.Status = common.SuccessCode
+		lResponse.Status = common.SUCCESSCODE
 
 		lRoleDetails, lErr := GetRoleDetails(lDebug)
 		if lErr != nil {
 			lDebug.Log(helpers.Elog, "GRATAPI001", lErr.Error())
-			lResponse.Status = common.ErrorCode
+			lResponse.Status = common.ERRORCODE
 			lResponse.ErrMsg = lErr.Error()
 		}
 		lResponse.RoleDetails = lRoleDetails
@@ -78,7 +79,7 @@ func GetRoleAndTaskAPI(w http.ResponseWriter, r *http.Request) {
 		lTaskDetails, lErr := GetTaskDetails(lDebug)
 		if lErr != nil {
 			lDebug.Log(helpers.Elog, "GRATAPI002", lErr.Error())
-			lResponse.Status = common.ErrorCode
+			lResponse.Status = common.ERRORCODE
 			lResponse.ErrMsg = lErr.Error()
 		}
 		lResponse.TaskDetails = lTaskDetails
@@ -86,7 +87,7 @@ func GetRoleAndTaskAPI(w http.ResponseWriter, r *http.Request) {
 		lRoleTaskDetails, lErr := GetRoleTaskDetails(lDebug)
 		if lErr != nil {
 			lDebug.Log(helpers.Elog, "GRATAPI003", lErr.Error())
-			lResponse.Status = common.ErrorCode
+			lResponse.Status = common.ERRORCODE
 			lResponse.ErrMsg = lErr.Error()
 		}
 		lResponse.RoleTaskDetails = lRoleTaskDetails
@@ -94,7 +95,7 @@ func GetRoleAndTaskAPI(w http.ResponseWriter, r *http.Request) {
 		lResp, lErr := json.Marshal(&lResponse)
 		if lErr != nil {
 			lDebug.Log(helpers.Elog, "GDDAPI004", lErr.Error())
-			lResponse.Status = common.ErrorCode
+			lResponse.Status = common.ERRORCODE
 			lResponse.ErrMsg = lErr.Error()
 		}
 		fmt.Fprint(w, string(lResp))
@@ -164,7 +165,7 @@ func GetRoleTaskDetails(pDebug *helpers.HelperStruct) ([]RoleTaskDetails, error)
 	var lRoleTaskDetails RoleTaskDetails
 	var lRoleTaskDetailsArr []RoleTaskDetails
 
-	lCoreString := `SELECT rtm.Id, rm.role, tm.task, rtm.CreatedBy, rtm.createdDate, rtm.UpdatedBy, rtm.UpdatedDate, rtm.isActive FROM role_task_master rtm join role_master rm on rtm.roleId = rm.Id join task_master tm on rtm.taskId =tm.id`
+	lCoreString := `SELECT rtm.Id, rm.role, tm.task,ifnull(rtm.description,""), rtm.CreatedBy, rtm.createdDate, rtm.UpdatedBy, rtm.UpdatedDate, rtm.isActive FROM role_task_master rtm join role_master rm on rtm.roleId = rm.Id join task_master tm on rtm.taskId =tm.id`
 	lRows, lErr := database.Gdb.Query(lCoreString)
 
 	if lErr != nil {
@@ -173,7 +174,7 @@ func GetRoleTaskDetails(pDebug *helpers.HelperStruct) ([]RoleTaskDetails, error)
 	}
 
 	for lRows.Next() {
-		lErr = lRows.Scan(&lRoleTaskDetails.Id, &lRoleTaskDetails.RoleId, &lRoleTaskDetails.TaskId, &lRoleTaskDetails.CreatedBy, &lRoleTaskDetails.CreatedDate, &lRoleTaskDetails.UpdatedBy, &lRoleTaskDetails.UpdatedDate, &lRoleTaskDetails.IsActive)
+		lErr = lRows.Scan(&lRoleTaskDetails.Id, &lRoleTaskDetails.Role, &lRoleTaskDetails.Task, &lRoleTaskDetails.Description, &lRoleTaskDetails.CreatedBy, &lRoleTaskDetails.CreatedDate, &lRoleTaskDetails.UpdatedBy, &lRoleTaskDetails.UpdatedDate, &lRoleTaskDetails.IsActive)
 		if lErr != nil {
 			pDebug.Log(helpers.Elog, "GRTD002", lErr.Error())
 			return lRoleTaskDetailsArr, lErr

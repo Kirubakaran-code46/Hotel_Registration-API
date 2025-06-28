@@ -1,8 +1,8 @@
 package apientry
 
 import (
-	"SDT_ADMIN_API/helpers"
-	database "SDT_ADMIN_API/sdtDb"
+	database "HOTEL-REGISTRY_API/Db_Setup"
+	"HOTEL-REGISTRY_API/helpers"
 	"net/http"
 	"strings"
 )

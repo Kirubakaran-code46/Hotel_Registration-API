@@ -1,62 +1,67 @@
 package common
 
 const (
-	SUCCESSCODE = "S"
-	ERRORCODE   = "E"
-	YES         = "Y"
-	INVALID     = "I"
-	NO          = "N"
-	EMAIL       = "EMAIL"
-	MOBILE      = "MOBILE"
+	SUCCESSCODE   = "S"
+	ERRORCODE     = "E"
+	YES           = "Y"
+	INVALID       = "I"
+	NO            = "N"
+	EMAIL         = "EMAIL"
+	MOBILE        = "MOBILE"
+	UIDCOOKIENAME = "client_id"
 )
 
-var AllowOrgin string
-
-type ResponseStruct struct {
-	ClientId   string `json:"clientId"`
-	ProfilePic string `json:"profilepic"`
-	Status     string `json:"status"`
-	Errmsg     string `json:"errMsg"`
+type BasicDetailsStruct struct {
+	Uid                string `json:"uid"`
+	HotelName          string `json:"hotelName"`
+	PropertyType       string `json:"propertyType"`
+	StarCategory       string `json:"starCategory"`
+	YearOfConstruction string `json:"yearOfConstruction"`
+	MobileCode         string `json:"mobileCode"`
+	PrimaryMobile      string `json:"primaryMobile"`
+	SecondaryMobile    string `json:"secondaryMobile"`
+	Email              string `json:"email"`
+	ChannelManager     string `json:"channelManager"`
 }
 
-const (
-	//--------------WALL APPLICATION CONSTANTS ------------------------
+type LocationDetailsStruct struct {
+	Uid       string `json:"uid"`
+	AddrLine1 string `json:"addrLine1"`
+	AddrLine2 string `json:"addrLine2"`
+	City      string `json:"city"`
+	State     string `json:"state"`
+	Zipcode   string `json:"zipcode"`
+}
 
-	ABHICookieName       = "ftab_pt"
-	ABHIClientCookieName = "ftab_ud"
-	ABHIDomain           = ""
-	//--------------OTHER COMMON CONSTANTS ------------------------
-	CookieMaxAge = 300
+type RoomType struct {
+	RoomType         string   `json:"roomType"`
+	NoOfRooms        string   `json:"noOfRooms"`
+	RoomView         string   `json:"roomView"`
+	RoomSizeUnit     string   `json:"roomSizeUnit"`
+	RoomSize         string   `json:"roomSize"`
+	MaximumOccupancy string   `json:"maximumOccupancy"`
+	ExtraBed         string   `json:"extraBed"`
+	ExtraPersons     string   `json:"extraPersons"`
+	SingleGuestPrice string   `json:"singleGuestPrice"`
+	DoubleGuestPrice string   `json:"doubleGuestPrice"`
+	TripleGuestPrice string   `json:"tripleGuestPrice"`
+	ExtraAdultCharge string   `json:"extraAdultCharge"`
+	ChildCharge      string   `json:"childCharge"`
+	BelowChildCharge string   `json:"belowChildCharge"`
+	RoomAmenities    []string `json:"roomAmenities"`
+	SmokingPolicy    string   `json:"smokingPolicy"`
+}
 
-	TechExcelPrefix = "TECHEXCELPROD.capsfo.dbo."
+type MealsInfo struct {
+	Uid                     string   `json:"uid"`
+	IsOperationalRestaurant string   `json:"isOperationalRestaurant"`
+	MealPackage             string   `json:"mealPackage"`
+	TypesOfMeals            []string `json:"typesOfMeals"`
+	MealRackPrice           string   `json:"mealRackPrice"`
+}
 
-	SuccessCode  = "S" //success
-	ErrorCode    = "E" //error
-	LoginFailure = "I" //??
-	NcbEnable    = "Y"
-
-	StatusPending = "P" //pending
-	StatusApprove = "A" //Approve
-	StatusReject  = "R" //Reject
-	StatusNew     = "N" //new
-	Statement     = "1"
-	Detail        = "2"
-	Panic         = "P"
-	NoPanic       = "NP"
-	INSERT        = "INSERT"
-	UPDATE        = "UPDATE"
-	SUCCESS       = "success"
-	FAILED        = "failed"
-	PENDING       = "pending"
-	AUTOBOT       = "AUTOBOT"
-	Mobile        = "M"
-	Web           = "W"
-)
-
-var ABHIAllowOrigin []string
-
-// var ABHIBrokerId = 0
-
-var ABHIBrokerId = 0
-
-var ABHIFlag string
+type AvailabilityInfo struct {
+	Uid       string `json:"uid"`
+	StartDate string `json:"startDate"`
+	EndDate   string `json:"endDate"`
+}

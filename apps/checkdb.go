@@ -1,8 +1,9 @@
 package apps
 
 import (
-	"SDT_ADMIN_API/helpers"
-	database "SDT_ADMIN_API/sdtDb"
+	database "HOTEL-REGISTRY_API/Db_Setup"
+	"HOTEL-REGISTRY_API/common"
+	"HOTEL-REGISTRY_API/helpers"
 	"encoding/json"
 
 	"fmt"
@@ -23,7 +24,7 @@ type EmpDetails struct {
 }
 
 func GetAllEmpDetailsAPI(w http.ResponseWriter, r *http.Request) {
-	(w).Header().Set("Access-Control-Allow-Origin", "*")
+	(w).Header().Set("Access-Control-Allow-Origin", common.AllowedOrigin)
 	(w).Header().Set("Access-Control-Allow-Credentials", "true")
 	(w).Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	(w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")

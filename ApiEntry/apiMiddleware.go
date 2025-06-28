@@ -1,8 +1,8 @@
 package apientry
 
 import (
-	"SDT_ADMIN_API/common"
-	"SDT_ADMIN_API/helpers"
+	"HOTEL-REGISTRY_API/common"
+	"HOTEL-REGISTRY_API/helpers"
 	"bytes"
 	"context"
 	"io"
