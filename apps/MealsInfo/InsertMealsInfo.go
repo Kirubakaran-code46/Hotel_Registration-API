@@ -2,7 +2,6 @@ package mealsinfo
 
 import (
 	database "HOTEL-REGISTRY_API/Db_Setup"
-	locationinfo "HOTEL-REGISTRY_API/apps/LocationInfo"
 	"HOTEL-REGISTRY_API/common"
 	"HOTEL-REGISTRY_API/helpers"
 	"encoding/json"
@@ -64,7 +63,7 @@ func InsertMealsInfoAPI(w http.ResponseWriter, r *http.Request) {
 func InsertMealsDetails(pDebug *helpers.HelperStruct, pReq common.MealsInfo) error {
 	pDebug.Log(helpers.Statement, "InsertMealsDetails (+)")
 
-	lExist, lErr := locationinfo.CheckUidInTable(pDebug, "meals_info", pReq.Uid)
+	lExist, lErr := common.CheckUidInTable(pDebug, "meals_info", pReq.Uid)
 	if lErr != nil {
 		pDebug.Log(helpers.Elog, "IMD001", lErr.Error())
 		return helpers.ErrReturn(lErr)

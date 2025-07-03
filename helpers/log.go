@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"HOTEL-REGISTRY_API/common"
+	tomlread "HOTEL-REGISTRY_API/common/TomlRead"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -96,7 +96,7 @@ func (h *HelperStruct) Log(pDebugLevel int, pMsg ...interface{}) {
 
 	//read the value from toml
 
-	lConfigFile := common.ReadTomlConfig("./toml/debug.toml")
+	lConfigFile := tomlread.ReadTomlConfig("./toml/debug.toml")
 	lLevel := fmt.Sprintf("%v", lConfigFile.(map[string]interface{})["LogCategory"])
 	intlevel, err := strconv.Atoi(lLevel)
 	if err != nil {

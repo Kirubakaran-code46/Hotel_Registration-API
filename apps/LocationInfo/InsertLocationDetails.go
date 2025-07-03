@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
 )
 
 func InsertLocationDetailsAPI(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +41,6 @@ func InsertLocationDetailsAPI(w http.ResponseWriter, r *http.Request) {
 
 		// GET UID FROM COOKIE
 		lReq.Uid, lErr = common.GetCookieValue(r, common.UIDCOOKIENAME)
-		fmt.Println("lReq.Uid", lReq.Uid)
 		if lErr != nil {
 			lDebug.Log(helpers.Elog, "ILDAPI003", lErr.Error())
 			fmt.Fprint(w, helpers.GetError_String("ILDAPI003", lErr.Error()))
@@ -64,7 +62,7 @@ func InsertLocationDetailsAPI(w http.ResponseWriter, r *http.Request) {
 func InsertLocationDetails(pDebug *helpers.HelperStruct, pReq common.LocationDetailsStruct) error {
 	pDebug.Log(helpers.Statement, "InsertLocationDetails (+)")
 
-	lExist, lErr := CheckUidInTable(pDebug, "location_info", pReq.Uid)
+	lExist, lErr := common.CheckUidInTable(pDebug, "location_info", pReq.Uid)
 	if lErr != nil {
 		pDebug.Log(helpers.Elog, "ILD001", lErr.Error())
 		return helpers.ErrReturn(lErr)
@@ -113,46 +111,4 @@ WHERE Uid = ?;`
 	pDebug.Log(helpers.Statement, "UpdateLocationDetails (-)")
 	return nil
 
-}
-
-// --------------------------------------------------------------------
-// CHECK UID PREST IN TABLE
-// --------------------------------------------------------------------
-func CheckUidInTable(pDebug *helpers.HelperStruct, pTableName, pUid string) (bool, error) {
-	pDebug.Log(helpers.Statement, "CheckUidInTable (+)")
-
-	var lExist string
-
-	var Status bool
-
-	lQueryString := fmt.Sprintf(`
-	SELECT CASE 
-		WHEN EXISTS (
-			SELECT 1 
-			FROM %s 
-			WHERE Uid = ?
-		) 
-		THEN 'YES' 
-		ELSE 'NO' 
-	END AS result;`, pTableName)
-
-	lRows, lErr := database.Gdb.Query(lQueryString, pUid)
-	if lErr != nil {
-		pDebug.Log(helpers.Elog, "ILD001", lErr.Error())
-		return Status, lErr
-	}
-	for lRows.Next() {
-		lErr = lRows.Scan(&lExist)
-		if lErr != nil {
-			pDebug.Log(helpers.Elog, "ILD002", lErr.Error())
-			return Status, lErr
-		}
-	}
-	if strings.EqualFold(lExist, "YES") {
-		Status = true
-	} else if strings.EqualFold(lExist, "NO") {
-		Status = false
-	}
-	pDebug.Log(helpers.Statement, "CheckUidInTable (+)")
-	return Status, nil
 }

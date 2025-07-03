@@ -11,9 +11,8 @@ import (
 
 func LogRequest(pDebug *helpers.HelperStruct, pToken string, pReqDtl APIRequestStruct, pRequestID string) {
 	pDebug.Log(helpers.Statement, "LogRequest (+)")
-
 	//insert token
-	if strings.EqualFold(pReqDtl.RequestType, "multipart/form-data") {
+	if strings.HasPrefix(pReqDtl.RequestType, "multipart/form-data") {
 		pReqDtl.Body = "file"
 	}
 	lQueryString := "insert into middleware_req_log(request_id,token,requesteddate,realip,forwardedip,method,path,host,remoteaddr,header,body,endpoint) values (?,?,NOW(),?,?,?,?,?,?,?,?,?)"

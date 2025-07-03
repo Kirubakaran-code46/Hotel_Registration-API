@@ -1,7 +1,7 @@
 package dbsetup
 
 import (
-	"HOTEL-REGISTRY_API/common"
+	tomlread "HOTEL-REGISTRY_API/common/TomlRead"
 	"fmt"
 	"strconv"
 )
@@ -12,7 +12,7 @@ const (
 
 // Initializing DB Details
 func (d *AllUsedDatabases) Init() {
-	dbconfig := common.ReadTomlConfig("./toml/Dbconfig.toml")
+	dbconfig := tomlread.ReadTomlConfig("./toml/Dbconfig.toml")
 
 	//setting IPO db connection details
 	d.SDTDB.Server = fmt.Sprintf("%v", dbconfig.(map[string]any)["HOST"])

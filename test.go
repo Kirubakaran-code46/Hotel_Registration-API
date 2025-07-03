@@ -1,12 +1,16 @@
 package main
 
 import (
+	"HOTEL-REGISTRY_API/common"
 	"fmt"
-
-	"github.com/google/uuid"
 )
 
 func main() {
-	clientID := uuid.New().String()
-	fmt.Println("Generated Client ID:", clientID)
+
+	lpath, lErr := common.GetFileBase64("DOC20250701105303_6632.png")
+
+	if lErr != nil {
+		fmt.Println(lErr)
+	}
+	fmt.Println("lpath", lpath)
 }

@@ -6,10 +6,13 @@ import (
 	"HOTEL-REGISTRY_API/apps"
 	availabilityinfo "HOTEL-REGISTRY_API/apps/AvailabilityInfo"
 	basicinfo "HOTEL-REGISTRY_API/apps/BasicInfo"
+	description "HOTEL-REGISTRY_API/apps/Description"
+	docsupload "HOTEL-REGISTRY_API/apps/DocsUpload"
 	getuserdetails "HOTEL-REGISTRY_API/apps/GetUserDetails"
 	locationinfo "HOTEL-REGISTRY_API/apps/LocationInfo"
 	mealsinfo "HOTEL-REGISTRY_API/apps/MealsInfo"
 	policyinfo "HOTEL-REGISTRY_API/apps/PolicyInfo"
+	propertydetails "HOTEL-REGISTRY_API/apps/PropertyDetails"
 	roomtypes "HOTEL-REGISTRY_API/apps/RoomTypes"
 	"fmt"
 	"log"
@@ -69,6 +72,14 @@ func CreateRouter() http.Handler {
 	// Policies
 	router.HandleFunc("/getPoliciesDropdown", policyinfo.GetPoliciesInfoDropdown).Methods(http.MethodGet)
 	router.HandleFunc("/insertPropertyPolicies", policyinfo.InsertPolicyInfoAPI).Methods(http.MethodPost)
+	// DocsInfo
+	router.HandleFunc("/insertDocsInfo", docsupload.InsertDocsInfoAPI).Methods(http.MethodPost)
+	// PropertyInfo
+	router.HandleFunc("/insertPropertyInfo", propertydetails.InsertPropertyInfoAPI).Methods(http.MethodPost)
+	// DescriptionInfo
+	router.HandleFunc("/insertDescInfo", description.InsertDescInfoAPI).Methods(http.MethodPost)
+	// Clear Session
+	router.HandleFunc("/clearSession", getuserdetails.ClearCookieAPI).Methods(http.MethodGet)
 
 	return router
 }

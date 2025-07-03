@@ -32,7 +32,6 @@ func GetAPIRequestDetail(pDebug *helpers.HelperStruct, r *http.Request) APIReque
 	lReqDetails.RequestType = r.Header.Get("Content-Type")
 
 	lReqDetails.Header = GetHeaderDetails(pDebug, r)
-	// fmt.Println("lreq", lReqDetails)
 	pDebug.Log(helpers.Statement, "GetAPIRequestDetail (-)")
 
 	return lReqDetails

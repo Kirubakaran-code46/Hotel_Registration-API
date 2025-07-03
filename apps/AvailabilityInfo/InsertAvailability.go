@@ -2,7 +2,6 @@ package availabilityinfo
 
 import (
 	database "HOTEL-REGISTRY_API/Db_Setup"
-	locationinfo "HOTEL-REGISTRY_API/apps/LocationInfo"
 	"HOTEL-REGISTRY_API/common"
 	"HOTEL-REGISTRY_API/helpers"
 	"encoding/json"
@@ -42,7 +41,6 @@ func InsertAvailabilityDetailsAPI(w http.ResponseWriter, r *http.Request) {
 
 		// GET UID FROM COOKIE
 		lReq.Uid, lErr = common.GetCookieValue(r, common.UIDCOOKIENAME)
-		fmt.Println("lReq.Uid", lReq.Uid)
 		if lErr != nil {
 			lDebug.Log(helpers.Elog, "IADAPI003", lErr.Error())
 			fmt.Fprint(w, helpers.GetError_String("IADAPI003", lErr.Error()))
@@ -64,7 +62,7 @@ func InsertAvailabilityDetailsAPI(w http.ResponseWriter, r *http.Request) {
 func InsertAvailabilityDetails(pDebug *helpers.HelperStruct, pReq common.AvailabilityInfo) error {
 	pDebug.Log(helpers.Statement, "InsertAvailabilityDetails (+)")
 
-	lExist, lErr := locationinfo.CheckUidInTable(pDebug, "location_info", pReq.Uid)
+	lExist, lErr := common.CheckUidInTable(pDebug, "location_info", pReq.Uid)
 	if lErr != nil {
 		pDebug.Log(helpers.Elog, "IAD001", lErr.Error())
 		return helpers.ErrReturn(lErr)

@@ -2,7 +2,6 @@ package roomtypes
 
 import (
 	database "HOTEL-REGISTRY_API/Db_Setup"
-	locationinfo "HOTEL-REGISTRY_API/apps/LocationInfo"
 	"HOTEL-REGISTRY_API/common"
 	"HOTEL-REGISTRY_API/helpers"
 	"encoding/json"
@@ -44,8 +43,6 @@ func InsertRoomDetailsAPI(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, helpers.GetError_String("IRDAPI002", lErr.Error()))
 			return
 		}
-		fmt.Println("roomArr", lReq)
-
 		var lCookieVal string
 
 		// GET UID FROM COOKIE
@@ -71,7 +68,7 @@ func InsertRoomDetailsAPI(w http.ResponseWriter, r *http.Request) {
 func InsertRoomsDetails(pDebug *helpers.HelperStruct, pReq []common.RoomType, pCookieVal string) error {
 	pDebug.Log(helpers.Statement, "InsertRoomsDetails (+)")
 
-	lUidEsist, lErr := locationinfo.CheckUidInTable(pDebug, "room_types", pCookieVal)
+	lUidEsist, lErr := common.CheckUidInTable(pDebug, "room_types", pCookieVal)
 	if lErr != nil {
 		pDebug.Log(helpers.Elog, "IRD001", lErr.Error())
 		return helpers.ErrReturn(lErr)

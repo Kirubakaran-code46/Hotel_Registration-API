@@ -20,6 +20,9 @@ type Response struct {
 	MealsInfo        common.MealsInfo             `json:"mealsInfo"`
 	AvailabilityInfo common.AvailabilityInfo      `json:"availabilityInfo"`
 	PoliciesInfo     common.PoliciesInfo          `json:"policiesInfo"`
+	DocsInfo         common.DocsUpload            `json:"docsInfo"`
+	PropertyPicInfo  common.PropertyDetails       `json:"propertyPicInfo"`
+	Description      string                       `json:"description"`
 }
 
 type ReqStruct struct {
@@ -47,76 +50,94 @@ func GetUserDetailsAPI(w http.ResponseWriter, r *http.Request) {
 
 		lBody, lErr := io.ReadAll(r.Body)
 		if lErr != nil {
-			lDebug.Log(helpers.Elog, "IBDAPI001", lErr.Error())
-			fmt.Fprint(w, helpers.GetError_String("IBDAPI001", lErr.Error()))
+			lDebug.Log(helpers.Elog, "GUDAPI001", lErr.Error())
+			fmt.Fprint(w, helpers.GetError_String("GUDAPI001", lErr.Error()))
 			return
 		}
 
 		lErr = json.Unmarshal(lBody, &lReq)
 		if lErr != nil {
-			lDebug.Log(helpers.Elog, "IBDAPI002", lErr.Error())
-			fmt.Fprint(w, helpers.GetError_String("IBDAPI002", lErr.Error()))
+			lDebug.Log(helpers.Elog, "GUDAPI002", lErr.Error())
+			fmt.Fprint(w, helpers.GetError_String("GUDAPI002", lErr.Error()))
 			return
 		}
 
 		if strings.EqualFold(lReq.Stage, "Basic Info") {
 			lResponse.BasicInfo, lErr = GetBasicInfo(lDebug, lReq.ClientId)
 			if lErr != nil {
-				lDebug.Log(helpers.Elog, "IBDAPI002", lErr.Error())
-				fmt.Fprint(w, helpers.GetError_String("IBDAPI002", lErr.Error()))
+				lDebug.Log(helpers.Elog, "GUDAPI003", lErr.Error())
+				fmt.Fprint(w, helpers.GetError_String("GUDAPI003", lErr.Error()))
 				return
 			}
 		} else if strings.EqualFold(lReq.Stage, "Location") {
 			lResponse.LocationInfo, lErr = GetLocationInfo(lDebug, lReq.ClientId)
 			if lErr != nil {
-				lDebug.Log(helpers.Elog, "IBDAPI002", lErr.Error())
-				fmt.Fprint(w, helpers.GetError_String("IBDAPI002", lErr.Error()))
+				lDebug.Log(helpers.Elog, "GUDAPI004", lErr.Error())
+				fmt.Fprint(w, helpers.GetError_String("GUDAPI004", lErr.Error()))
 				return
 			}
 
 		} else if strings.EqualFold(lReq.Stage, "Room Details") {
 			lResponse.RoomTypesInfo, lErr = GetRoomDetailsInfo(lDebug, lReq.ClientId)
 			if lErr != nil {
-				lDebug.Log(helpers.Elog, "IBDAPI002", lErr.Error())
-				fmt.Fprint(w, helpers.GetError_String("IBDAPI002", lErr.Error()))
+				lDebug.Log(helpers.Elog, "GUDAPI005", lErr.Error())
+				fmt.Fprint(w, helpers.GetError_String("GUDAPI005", lErr.Error()))
 				return
 			}
 
 		} else if strings.EqualFold(lReq.Stage, "Restaurant & Meals") {
 			lResponse.MealsInfo, lErr = GetMealsInfo(lDebug, lReq.ClientId)
 			if lErr != nil {
-				lDebug.Log(helpers.Elog, "IBDAPI002", lErr.Error())
-				fmt.Fprint(w, helpers.GetError_String("IBDAPI002", lErr.Error()))
+				lDebug.Log(helpers.Elog, "GUDAPI005", lErr.Error())
+				fmt.Fprint(w, helpers.GetError_String("GUDAPI005", lErr.Error()))
 				return
 			}
 
 		} else if strings.EqualFold(lReq.Stage, "Availability") {
 			lResponse.AvailabilityInfo, lErr = GetAvailabilityInfo(lDebug, lReq.ClientId)
 			if lErr != nil {
-				lDebug.Log(helpers.Elog, "IBDAPI002", lErr.Error())
-				fmt.Fprint(w, helpers.GetError_String("IBDAPI002", lErr.Error()))
+				lDebug.Log(helpers.Elog, "GUDAPI006", lErr.Error())
+				fmt.Fprint(w, helpers.GetError_String("GUDAPI006", lErr.Error()))
 				return
 			}
 
 		} else if strings.EqualFold(lReq.Stage, "Policies") {
 			lResponse.PoliciesInfo, lErr = GetPolicieInfo(lDebug, lReq.ClientId)
 			if lErr != nil {
-				lDebug.Log(helpers.Elog, "IBDAPI002", lErr.Error())
-				fmt.Fprint(w, helpers.GetError_String("IBDAPI002", lErr.Error()))
+				lDebug.Log(helpers.Elog, "GUDAPI007", lErr.Error())
+				fmt.Fprint(w, helpers.GetError_String("GUDAPI007", lErr.Error()))
 				return
 			}
 
 		} else if strings.EqualFold(lReq.Stage, "Docs") {
 
-		} else if strings.EqualFold(lReq.Stage, "Property Details") {
+			lResponse.DocsInfo, lErr = GetDocsInfo(lDebug, lReq.ClientId)
+			if lErr != nil {
+				lDebug.Log(helpers.Elog, "GUDAPI008", lErr.Error())
+				fmt.Fprint(w, helpers.GetError_String("GUDAPI008", lErr.Error()))
+				return
+			}
+
+		} else if strings.EqualFold(lReq.Stage, "Property Images") {
+			lResponse.PropertyPicInfo, lErr = GetPropertyPicInfo(lDebug, lReq.ClientId)
+			if lErr != nil {
+				lDebug.Log(helpers.Elog, "GUDAPI009", lErr.Error())
+				fmt.Fprint(w, helpers.GetError_String("GUDAPI009", lErr.Error()))
+				return
+			}
 
 		} else if strings.EqualFold(lReq.Stage, "Notes") {
-
+			lResponse.Description, lErr = GetDescription(lDebug, lReq.ClientId)
+			if lErr != nil {
+				lDebug.Log(helpers.Elog, "GUDAPI010", lErr.Error())
+				fmt.Fprint(w, helpers.GetError_String("GUDAPI010", lErr.Error()))
+				return
+			}
 		}
 
 		lResp, lErr := json.Marshal(&lResponse)
 		if lErr != nil {
-			lDebug.Log(helpers.Elog, "GDDAPI002", lErr.Error())
+			lDebug.Log(helpers.Elog, "GUDAPI011", lErr.Error())
 			lResponse.Status = common.ERRORCODE
 			lResponse.ErrMsg = lErr.Error()
 		}
@@ -139,14 +160,14 @@ func GetBasicInfo(pDebug *helpers.HelperStruct, pReq string) (common.BasicDetail
 
 	if lErr != nil {
 		pDebug.Log(helpers.Elog, "GBI001", lErr.Error())
-		helpers.ErrReturn(lErr)
+		return lBasicInfo, lErr
 	}
 
 	for lRows.Next() {
 		lErr = lRows.Scan(&lBasicInfo.HotelName, &lBasicInfo.PropertyType, &lBasicInfo.Email, &lBasicInfo.YearOfConstruction, &lBasicInfo.MobileCode, &lBasicInfo.PrimaryMobile, &lBasicInfo.SecondaryMobile, &lBasicInfo.StarCategory, &lBasicInfo.ChannelManager)
 		if lErr != nil {
 			pDebug.Log(helpers.Elog, "GBI002", lErr.Error())
-			helpers.ErrReturn(lErr)
+			return lBasicInfo, lErr
 		}
 	}
 
@@ -168,14 +189,14 @@ func GetLocationInfo(pDebug *helpers.HelperStruct, pReq string) (common.Location
 
 	if lErr != nil {
 		pDebug.Log(helpers.Elog, "GLI001", lErr.Error())
-		helpers.ErrReturn(lErr)
+		return lLocationInfo, lErr
 	}
 
 	for lRows.Next() {
 		lErr = lRows.Scan(&lLocationInfo.AddrLine1, &lLocationInfo.AddrLine2, &lLocationInfo.State, &lLocationInfo.City, &lLocationInfo.Zipcode)
 		if lErr != nil {
 			pDebug.Log(helpers.Elog, "GLI002", lErr.Error())
-			helpers.ErrReturn(lErr)
+			return lLocationInfo, lErr
 		}
 	}
 
@@ -196,8 +217,8 @@ func GetRoomDetailsInfo(pDebug *helpers.HelperStruct, pReq string) ([]common.Roo
 	lRows, lErr := database.Gdb.Query(lCoreString, pReq)
 
 	if lErr != nil {
-		pDebug.Log(helpers.Elog, "GLI001", lErr.Error())
-		helpers.ErrReturn(lErr)
+		pDebug.Log(helpers.Elog, "GRD001", lErr.Error())
+		return lRoomTypeArr, lErr
 	}
 
 	for lRows.Next() {
@@ -205,8 +226,8 @@ func GetRoomDetailsInfo(pDebug *helpers.HelperStruct, pReq string) ([]common.Roo
 
 		lErr = lRows.Scan(&lRoomType.RoomType, &lRoomType.NoOfRooms, &lRoomType.RoomView, &lRoomType.RoomSizeUnit, &lRoomType.RoomSize, &lRoomType.MaximumOccupancy, &lRoomType.ExtraBed, &lRoomType.ExtraPersons, &lRoomType.SingleGuestPrice, &lRoomType.DoubleGuestPrice, &lRoomType.TripleGuestPrice, &lRoomType.ExtraAdultCharge, &lRoomType.ChildCharge, &lRoomType.BelowChildCharge, &lAmenitiesArrStr, &lRoomType.SmokingPolicy)
 		if lErr != nil {
-			pDebug.Log(helpers.Elog, "GLI002", lErr.Error())
-			helpers.ErrReturn(lErr)
+			pDebug.Log(helpers.Elog, "GRD002", lErr.Error())
+			return lRoomTypeArr, lErr
 		}
 
 		if strings.TrimSpace(lAmenitiesArrStr) == "" {
@@ -236,7 +257,7 @@ func GetMealsInfo(pDebug *helpers.HelperStruct, pReq string) (common.MealsInfo, 
 
 	if lErr != nil {
 		pDebug.Log(helpers.Elog, "GMI001", lErr.Error())
-		helpers.ErrReturn(lErr)
+		return lMealsInfo, lErr
 	}
 	var lTypeOfMealsArrStr string
 
@@ -244,7 +265,7 @@ func GetMealsInfo(pDebug *helpers.HelperStruct, pReq string) (common.MealsInfo, 
 		lErr = lRows.Scan(&lMealsInfo.IsOperationalRestaurant, &lMealsInfo.MealPackage, &lTypeOfMealsArrStr, &lMealsInfo.MealRackPrice)
 		if lErr != nil {
 			pDebug.Log(helpers.Elog, "GMI002", lErr.Error())
-			helpers.ErrReturn(lErr)
+			return lMealsInfo, lErr
 		}
 
 		if strings.TrimSpace(lTypeOfMealsArrStr) == "" {
@@ -265,21 +286,21 @@ func GetAvailabilityInfo(pDebug *helpers.HelperStruct, pReq string) (common.Avai
 
 	var lAvailabilityInfo common.AvailabilityInfo
 
-	lCoreString := `  SELECT availability_Start_Date, availability_End_Date
+	lCoreString := `  SELECT IFNULL(availability_Start_Date,''), IFNULL(availability_End_Date,'')
 					  FROM location_info where Uid = ? and isActive ='Y' order by id desc limit 1`
 
 	lRows, lErr := database.Gdb.Query(lCoreString, pReq)
 
 	if lErr != nil {
 		pDebug.Log(helpers.Elog, "GAI001", lErr.Error())
-		helpers.ErrReturn(lErr)
+		return lAvailabilityInfo, lErr
 	}
 
 	for lRows.Next() {
 		lErr = lRows.Scan(&lAvailabilityInfo.StartDate, &lAvailabilityInfo.EndDate)
 		if lErr != nil {
 			pDebug.Log(helpers.Elog, "GAI002", lErr.Error())
-			helpers.ErrReturn(lErr)
+			return lAvailabilityInfo, lErr
 		}
 	}
 
@@ -301,7 +322,7 @@ func GetPolicieInfo(pDebug *helpers.HelperStruct, pReq string) (common.PoliciesI
 
 	if lErr != nil {
 		pDebug.Log(helpers.Elog, "GPI001", lErr.Error())
-		helpers.ErrReturn(lErr)
+		return lPoliciesInfo, lErr
 	}
 	var lTypeOfProofsArrStr string
 
@@ -309,7 +330,7 @@ func GetPolicieInfo(pDebug *helpers.HelperStruct, pReq string) (common.PoliciesI
 		lErr = lRows.Scan(&lPoliciesInfo.Check_in, &lPoliciesInfo.Check_out, &lPoliciesInfo.Checkinout_policy, &lPoliciesInfo.CancellationPolicy, &lPoliciesInfo.Allow_unmarriedCouples, &lPoliciesInfo.Allow_minor_guest, &lPoliciesInfo.Allow_onlymale_guests, &lPoliciesInfo.Allow_smoking, &lPoliciesInfo.Allow_parties, &lPoliciesInfo.Allow_invite_guests, &lPoliciesInfo.Wheelchar_accessible, &lPoliciesInfo.Allow_pets, &lTypeOfProofsArrStr, &lPoliciesInfo.Additional_propertyrules)
 		if lErr != nil {
 			pDebug.Log(helpers.Elog, "GPI002", lErr.Error())
-			helpers.ErrReturn(lErr)
+			return lPoliciesInfo, lErr
 		}
 
 		if strings.TrimSpace(lTypeOfProofsArrStr) == "" {
@@ -321,4 +342,150 @@ func GetPolicieInfo(pDebug *helpers.HelperStruct, pReq string) (common.PoliciesI
 
 	pDebug.Log(helpers.Statement, "GetPolicieInfo (-)")
 	return lPoliciesInfo, nil
+}
+
+// GET DOCUMENTS INFORMATION
+
+func GetDocsInfo(pDebug *helpers.HelperStruct, pReq string) (common.DocsUpload, error) {
+	pDebug.Log(helpers.Statement, "GetDocsInfo (+)")
+
+	var lDocsInfo common.DocsUpload
+
+	// GET DOC UPLOAD DETAILS
+
+	lCoreString := `SELECT Bank_Name, Account_Number, Acc_HolderName, IFSC_code, Branch, GST_Number, GST_docId, cancelledCheque_docId,propertyOwnership,Start_Date,End_Date 
+	FROM document_upload where Uid =? and isActive ='Y' order by id desc limit 1`
+
+	lRows, lErr := database.Gdb.Query(lCoreString, pReq)
+
+	if lErr != nil {
+		pDebug.Log(helpers.Elog, "GPI001", lErr.Error())
+		return lDocsInfo, helpers.ErrReturn(lErr)
+	}
+
+	for lRows.Next() {
+		lErr = lRows.Scan(&lDocsInfo.BankName, &lDocsInfo.AccountNumber, &lDocsInfo.AccHolderName, &lDocsInfo.IFSC_Code, &lDocsInfo.Branch, &lDocsInfo.GST_Number, &lDocsInfo.GST_Docid, &lDocsInfo.CancelledChequeDocid, &lDocsInfo.PropertyOwnership, &lDocsInfo.StartDate, &lDocsInfo.EndDate)
+		if lErr != nil {
+			pDebug.Log(helpers.Elog, "GPI002", lErr.Error())
+			return lDocsInfo, helpers.ErrReturn(lErr)
+
+		}
+	}
+	// GET GST FILES BASED ON DOCID
+	if strings.EqualFold(lDocsInfo.GST_Docid, "") {
+		lDocsInfo.GST_FileBase64 = ""
+	} else {
+
+		lDocsInfo.GST_FileBase64, lErr = common.GetFileBase64(pDebug, lDocsInfo.GST_Docid)
+		if lErr != nil {
+			pDebug.Log(helpers.Elog, "GPI002", lErr.Error())
+			return lDocsInfo, helpers.ErrReturn(lErr)
+
+		}
+	}
+	// GET CHECQUE FILES BASED ON DOCID
+	if strings.EqualFold(lDocsInfo.CancelledChequeDocid, "") {
+		lDocsInfo.Cheque_FileBase64 = ""
+	} else {
+
+		lDocsInfo.Cheque_FileBase64, lErr = common.GetFileBase64(pDebug, lDocsInfo.CancelledChequeDocid)
+		if lErr != nil {
+			pDebug.Log(helpers.Elog, "GPI002", lErr.Error())
+			return lDocsInfo, helpers.ErrReturn(lErr)
+
+		}
+	}
+
+	// GET DOC UTILITIES DETAILS
+	var lUtilitiesArr []common.DocUtilities
+	var lUtilities common.DocUtilities
+
+	lCoreString = `SELECT Bill_Type,Bill_docId FROM utility_types
+				   where Uid =? and isActive ='Y'`
+
+	lRows, lErr = database.Gdb.Query(lCoreString, pReq)
+
+	if lErr != nil {
+		pDebug.Log(helpers.Elog, "GPI001", lErr.Error())
+		return lDocsInfo, helpers.ErrReturn(lErr)
+	}
+
+	for lRows.Next() {
+		lErr = lRows.Scan(&lUtilities.BillType, &lUtilities.BillDocid)
+		if lErr != nil {
+			pDebug.Log(helpers.Elog, "GPI002", lErr.Error())
+			return lDocsInfo, helpers.ErrReturn(lErr)
+		}
+		// lUtilities.BillFileBase64, lErr = common.GetFileBase64(pDebug, lUtilities.BillDocid)
+		// if lErr != nil {
+		// 	if strings.Contains("docid empty", lErr.Error()) {
+		// 		pDebug.Log(helpers.Elog, "GPI002", lErr.Error())
+		// 	} else {
+		// 		pDebug.Log(helpers.Elog, "GPI002", lErr.Error())
+		// 		return lDocsInfo, helpers.ErrReturn(lErr)
+		// 	}
+		// }
+
+		lUtilitiesArr = append(lUtilitiesArr, lUtilities)
+	}
+	lDocsInfo.Utilities = lUtilitiesArr
+
+	pDebug.Log(helpers.Statement, "GetDocsInfo (-)")
+	return lDocsInfo, nil
+}
+
+// GET PROPERTY DETAILS INFORMATION
+
+func GetPropertyPicInfo(pDebug *helpers.HelperStruct, pReq string) (common.PropertyDetails, error) {
+	pDebug.Log(helpers.Statement, "GetPropertyPicInfo (+)")
+
+	var lPropertyPic common.PropertyDetails
+
+	lCoreString := ` SELECT Facade_docId, Parking_docId, Lobby_docId, Reception_docId, Corridors_docId, Lift_docId, Bathroom_docId, OtherArea_docId, PropertyImg_docId FROM property_details where Uid =? and isActive ='Y'`
+
+	lRows, lErr := database.Gdb.Query(lCoreString, pReq)
+
+	if lErr != nil {
+		pDebug.Log(helpers.Elog, "GPPIC001", lErr.Error())
+		return lPropertyPic, lErr
+	}
+
+	for lRows.Next() {
+		lErr = lRows.Scan(&lPropertyPic.FacadeDocID, &lPropertyPic.ParkingDocID, &lPropertyPic.LobbyDocID, &lPropertyPic.ReceptionDocID, &lPropertyPic.CorridorsDocID, &lPropertyPic.LiftDocID, &lPropertyPic.BathroomDocID, &lPropertyPic.OtherAreaDocID, &lPropertyPic.PropertyImgDocID)
+		if lErr != nil {
+			pDebug.Log(helpers.Elog, "GPPIC002", lErr.Error())
+			return lPropertyPic, lErr
+		}
+	}
+
+	pDebug.Log(helpers.Statement, "GetPropertyPicInfo (-)")
+	return lPropertyPic, nil
+}
+
+// GET DESCRIPTION INFORMATION
+
+func GetDescription(pDebug *helpers.HelperStruct, pReq string) (string, error) {
+	pDebug.Log(helpers.Statement, "GetDescription (+)")
+
+	var lDesc string
+
+	lCoreString := ` SELECT ifnull(Description,'') FROM basic_info where Uid =? and isActive ='Y'`
+
+	lRows, lErr := database.Gdb.Query(lCoreString, pReq)
+
+	if lErr != nil {
+		pDebug.Log(helpers.Elog, "GD001", lErr.Error())
+		return lDesc, helpers.ErrReturn(lErr)
+	}
+
+	for lRows.Next() {
+		lErr = lRows.Scan(&lDesc)
+		if lErr != nil {
+			pDebug.Log(helpers.Elog, "GD002", lErr.Error())
+			return lDesc, helpers.ErrReturn(lErr)
+		}
+	}
+
+	pDebug.Log(helpers.Statement, "GetDescription (-)")
+	return lDesc, nil
 }
