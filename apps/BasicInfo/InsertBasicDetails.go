@@ -72,9 +72,8 @@ func InsertBasicDetailsAPI(w http.ResponseWriter, r *http.Request) {
 				MaxAge:   60 * 60 * 24 * 30, // 30 days
 			})
 		}
-
+		fmt.Fprint(w, helpers.GetMsg_String("S", "Inserted Successfully"))
 	}
-	fmt.Fprint(w, helpers.GetMsg_String("S", "Inserted Successfully"))
 	lDebug.Log(helpers.Statement, "InsertBasicDetailsAPI (-)")
 }
 

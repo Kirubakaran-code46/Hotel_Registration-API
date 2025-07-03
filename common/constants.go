@@ -83,3 +83,45 @@ type PoliciesInfo struct {
 	Accepted_proofs          []string `json:"accepted_proofs"`
 	Additional_propertyrules string   `json:"additional_propertyrules"`
 }
+
+type DocsUpload struct {
+	Uid                  string         `json:"uid"`
+	BankName             string         `json:"bankName"`
+	AccountNumber        string         `json:"accountNumber"`
+	AccHolderName        string         `json:"accHolderName"`
+	IFSC_Code            string         `json:"IFSC_Code"`
+	Branch               string         `json:"Branch"`
+	GST_Number           string         `json:"GST_Number"`
+	GST_Docid            string         `json:"GST_Docid"`
+	PropertyOwnership    string         `json:"PropertyOwnership"`
+	StartDate            string         `json:"startDate"`
+	EndDate              string         `json:"endDate"`
+	GST_FileBase64       string         `json:"gstFileBase64,omitempty"`
+	CancelledChequeDocid string         `json:"cancelledChequeDocid"`
+	Cheque_FileBase64    string         `json:"chequeFileBase64,omitempty"`
+	Utilities            []DocUtilities `json:"utilities"`
+}
+
+type DocUtilities struct {
+	BillType       string `json:"billType"`
+	BillDocid      string `json:"billDocid"`
+	BillFileBase64 string `json:"billFileBase64,omitempty"`
+}
+
+type PropertyDetails struct {
+	Uid              string  `json:"Uid"`
+	FacadeDocID      *string `json:"Facade_docId"`
+	ParkingDocID     *string `json:"Parking_docId"`
+	LobbyDocID       *string `json:"Lobby_docId"`
+	ReceptionDocID   *string `json:"Reception_docId"`
+	CorridorsDocID   *string `json:"Corridors_docId"`
+	LiftDocID        *string `json:"Lift_docId"`
+	BathroomDocID    *string `json:"Bathroom_docId"`
+	OtherAreaDocID   *string `json:"OtherArea_docId"`
+	PropertyImgDocID *string `json:"PropertyImg_docId"`
+}
+
+type Description struct {
+	Uid         string `json:"Uid"`
+	Description string `json:"description"`
+}

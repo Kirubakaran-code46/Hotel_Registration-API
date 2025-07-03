@@ -1,7 +1,7 @@
 package DbConnect
 
 import (
-	"HOTEL-REGISTRY_API/common"
+	tomlread "HOTEL-REGISTRY_API/common/TomlRead"
 	"database/sql"
 	"fmt"
 	"log"
@@ -11,7 +11,7 @@ import (
 
 func ConnectDb() (*sql.DB, error) {
 	log.Println("DB connection (+)")
-	config := common.ReadTomlConfig("toml/Dbconfig.toml")
+	config := tomlread.ReadTomlConfig("toml/Dbconfig.toml")
 	NAME := fmt.Sprintf("%v", config.(map[string]interface{})["NAME"])
 	USER := fmt.Sprintf("%v", config.(map[string]interface{})["USER"])
 	HOST := fmt.Sprintf("%v", config.(map[string]interface{})["HOST"])
