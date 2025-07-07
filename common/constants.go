@@ -100,6 +100,9 @@ type DocsUpload struct {
 	CancelledChequeDocid string         `json:"cancelledChequeDocid"`
 	Cheque_FileBase64    string         `json:"chequeFileBase64,omitempty"`
 	Utilities            []DocUtilities `json:"utilities"`
+	Ifsc_city            string         `json:"ifsc_city"`
+	Ifsc_Address         string         `json:"ifsc_Address"`
+	Ifsc_State           string         `json:"ifsc_State"`
 }
 
 type DocUtilities struct {

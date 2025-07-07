@@ -99,6 +99,9 @@ CREATE TABLE `document_upload` (
   `propertyOwnership` varchar(80) DEFAULT NULL,
   `Start_Date` varchar(20) DEFAULT NULL,
   `End_Date` varchar(20) DEFAULT NULL,
+  `ifsc_city` varchar(20) DEFAULT NULL,
+  `ifsc_Address` text DEFAULT NULL,
+  `ifsc_state` varchar(80) DEFAULT NULL,
   PRIMARY KEY (`id`)
 )
 

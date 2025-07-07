@@ -3,7 +3,6 @@ package main
 import (
 	apientry "HOTEL-REGISTRY_API/ApiEntry"
 	sdtdb "HOTEL-REGISTRY_API/Db_Setup"
-	"HOTEL-REGISTRY_API/apps"
 	availabilityinfo "HOTEL-REGISTRY_API/apps/AvailabilityInfo"
 	basicinfo "HOTEL-REGISTRY_API/apps/BasicInfo"
 	description "HOTEL-REGISTRY_API/apps/Description"
@@ -58,26 +57,41 @@ func main() {
 
 func CreateRouter() http.Handler {
 	router := mux.NewRouter()
-
-	router.HandleFunc("/getEmpDetails", apps.GetAllEmpDetailsAPI).Methods(http.MethodGet)
-	router.HandleFunc("/getPropertyTypes", basicinfo.GetBasicInfoDropdown).Methods(http.MethodGet)
-	router.HandleFunc("/getStates", locationinfo.GetStateDropdown).Methods(http.MethodGet)
-	router.HandleFunc("/getRoomDropdown", roomtypes.GetRoomTypesDropdown).Methods(http.MethodGet)
-	router.HandleFunc("/insertBasicInfo", basicinfo.InsertBasicDetailsAPI).Methods(http.MethodPost)
-	router.HandleFunc("/insertLocationInfo", locationinfo.InsertLocationDetailsAPI).Methods(http.MethodPost)
+	// GET USER INFO
 	router.HandleFunc("/getUserInfo", getuserdetails.GetUserDetailsAPI).Methods(http.MethodPost)
+
+	// Basic Info
+	router.HandleFunc("/getPropertyTypes", basicinfo.GetBasicInfoDropdown).Methods(http.MethodGet)
+	router.HandleFunc("/insertBasicInfo", basicinfo.InsertBasicDetailsAPI).Methods(http.MethodPost)
+
+	// Location Info
+	router.HandleFunc("/getStates", locationinfo.GetStateDropdown).Methods(http.MethodGet)
+	router.HandleFunc("/insertLocationInfo", locationinfo.InsertLocationDetailsAPI).Methods(http.MethodPost)
+
+	// Room Info
+	router.HandleFunc("/getRoomDropdown", roomtypes.GetRoomTypesDropdown).Methods(http.MethodGet)
 	router.HandleFunc("/inserRoomDetails", roomtypes.InsertRoomDetailsAPI).Methods(http.MethodPost)
+
+	// Meals Info
 	router.HandleFunc("/insertMealsInfo", mealsinfo.InsertMealsInfoAPI).Methods(http.MethodPost)
+
+	// Availability Info
 	router.HandleFunc("/insertAvailability", availabilityinfo.InsertAvailabilityDetailsAPI).Methods(http.MethodPost)
+
 	// Policies
 	router.HandleFunc("/getPoliciesDropdown", policyinfo.GetPoliciesInfoDropdown).Methods(http.MethodGet)
 	router.HandleFunc("/insertPropertyPolicies", policyinfo.InsertPolicyInfoAPI).Methods(http.MethodPost)
+
 	// DocsInfo
 	router.HandleFunc("/insertDocsInfo", docsupload.InsertDocsInfoAPI).Methods(http.MethodPost)
+	router.HandleFunc("/getIFSCdetails", docsupload.GetIFSCdetailsAPI).Methods(http.MethodPost)
+
 	// PropertyInfo
 	router.HandleFunc("/insertPropertyInfo", propertydetails.InsertPropertyInfoAPI).Methods(http.MethodPost)
+
 	// DescriptionInfo
 	router.HandleFunc("/insertDescInfo", description.InsertDescInfoAPI).Methods(http.MethodPost)
+
 	// Clear Session
 	router.HandleFunc("/clearSession", getuserdetails.ClearCookieAPI).Methods(http.MethodGet)
 

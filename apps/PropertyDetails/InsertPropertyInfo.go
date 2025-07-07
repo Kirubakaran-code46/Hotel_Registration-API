@@ -3,6 +3,7 @@ package propertydetails
 import (
 	database "HOTEL-REGISTRY_API/Db_Setup"
 	"HOTEL-REGISTRY_API/common"
+	s3filehandler "HOTEL-REGISTRY_API/common/S3FileHandler"
 
 	"HOTEL-REGISTRY_API/helpers"
 	"fmt"
@@ -59,7 +60,9 @@ func InsertPropertyDetails(pDebug *helpers.HelperStruct, pReq *http.Request) err
 		if filePresent {
 			if len(fileHeaders) > 0 {
 				// File Upload
-				lFileDocId, lErr := common.FilesUpload(pDebug, pReq, lKey)
+				// lFileDocId, lErr := common.FilesUpload(pDebug, pReq, lKey)
+				lFileDocId, lErr := s3filehandler.S3FileUpload(pDebug, pReq, lKey)
+
 				if lErr != nil {
 					pDebug.Log(helpers.Elog, "IDI001", lErr)
 					return helpers.ErrReturn(lErr)

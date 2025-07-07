@@ -1,16 +1,19 @@
 package main
 
 import (
-	"HOTEL-REGISTRY_API/common"
+	s3filehandler "HOTEL-REGISTRY_API/common/S3FileHandler"
+	"HOTEL-REGISTRY_API/helpers"
 	"fmt"
 )
 
 func main() {
 
-	lpath, lErr := common.GetFileBase64("DOC20250701105303_6632.png")
+	lDebug := new(helpers.HelperStruct)
 
-	if lErr != nil {
-		fmt.Println(lErr)
+	file, err := s3filehandler.S3FileDownload(lDebug, "DOC20250704160627_3543.PNG")
+	if err != nil {
+		fmt.Println("###", err)
+	} else {
+		fmt.Println("file->", file)
 	}
-	fmt.Println("lpath", lpath)
 }
