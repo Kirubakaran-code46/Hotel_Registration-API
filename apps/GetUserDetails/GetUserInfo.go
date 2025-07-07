@@ -353,7 +353,7 @@ func GetDocsInfo(pDebug *helpers.HelperStruct, pReq string) (common.DocsUpload, 
 
 	// GET DOC UPLOAD DETAILS
 
-	lCoreString := `SELECT Bank_Name, Account_Number, Acc_HolderName, IFSC_code, Branch, GST_Number, GST_docId, cancelledCheque_docId,propertyOwnership,Start_Date,End_Date 
+	lCoreString := `SELECT IFNULL(Bank_Name,""), IFNULL(Account_Number,""), IFNULL(Acc_HolderName,""), IFNULL(IFSC_code,""), IFNULL(Branch,""), IFNULL(GST_Number,""), IFNULL(GST_docId,""), IFNULL(cancelledCheque_docId,""),IFNULL(propertyOwnership,""),IFNULL(Start_Date,""),IFNULL(End_Date,""),IFNULL(ifsc_city,""),IFNULL(ifsc_Address,""),IFNULL(ifsc_state,"")
 	FROM document_upload where Uid =? and isActive ='Y' order by id desc limit 1`
 
 	lRows, lErr := database.Gdb.Query(lCoreString, pReq)
@@ -364,7 +364,7 @@ func GetDocsInfo(pDebug *helpers.HelperStruct, pReq string) (common.DocsUpload, 
 	}
 
 	for lRows.Next() {
-		lErr = lRows.Scan(&lDocsInfo.BankName, &lDocsInfo.AccountNumber, &lDocsInfo.AccHolderName, &lDocsInfo.IFSC_Code, &lDocsInfo.Branch, &lDocsInfo.GST_Number, &lDocsInfo.GST_Docid, &lDocsInfo.CancelledChequeDocid, &lDocsInfo.PropertyOwnership, &lDocsInfo.StartDate, &lDocsInfo.EndDate)
+		lErr = lRows.Scan(&lDocsInfo.BankName, &lDocsInfo.AccountNumber, &lDocsInfo.AccHolderName, &lDocsInfo.IFSC_Code, &lDocsInfo.Branch, &lDocsInfo.GST_Number, &lDocsInfo.GST_Docid, &lDocsInfo.CancelledChequeDocid, &lDocsInfo.PropertyOwnership, &lDocsInfo.StartDate, &lDocsInfo.EndDate, &lDocsInfo.Ifsc_city, &lDocsInfo.Ifsc_Address, &lDocsInfo.Ifsc_State)
 		if lErr != nil {
 			pDebug.Log(helpers.Elog, "GPI002", lErr.Error())
 			return lDocsInfo, helpers.ErrReturn(lErr)

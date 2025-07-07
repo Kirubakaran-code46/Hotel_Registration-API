@@ -5,6 +5,7 @@ import (
 	tomlread "HOTEL-REGISTRY_API/common/TomlRead"
 	"HOTEL-REGISTRY_API/helpers"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -19,14 +20,9 @@ import (
 )
 
 // --------------------------------------------------------------------
-// function reads the constants from the config.toml file
-// --------------------------------------------------------------------
-
-// --------------------------------------------------------------------
 // READ COOKIE
 // --------------------------------------------------------------------
 
-// GetCookieValue reads a cookie by name from the request and returns its value.
 func GetCookieValue(r *http.Request, name string) (string, error) {
 	cookie, err := r.Cookie(name)
 	if err != nil {
@@ -106,6 +102,10 @@ func GenerateDocID() string {
 	return fmt.Sprintf("DOC%s_%04d", timestamp, random)
 }
 
+// --------------------------------------------------------------------
+// UPLOAD FILE TO THE SPECFIC LOCATION
+// --------------------------------------------------------------------
+
 func FilesUpload(pDebug *helpers.HelperStruct, pReq *http.Request, pFileKey string) (string, error) {
 	pDebug.Log(helpers.Statement, "FilesUpload (+)")
 
@@ -156,7 +156,10 @@ func FilesUpload(pDebug *helpers.HelperStruct, pReq *http.Request, pFileKey stri
 	return filename, nil
 }
 
-// GET BASE64 FILE
+// --------------------------------------------------------------------
+// GET FILE WITH DOCID
+// --------------------------------------------------------------------
+
 func GetFileBase64(pDebug *helpers.HelperStruct, docID string) (string, error) {
 	pDebug.Log(helpers.Statement, "GetFileBase64 (+)")
 
@@ -229,13 +232,13 @@ func CheckUidInTable(pDebug *helpers.HelperStruct, pTableName, pUid string) (boo
 
 	lRows, lErr := database.Gdb.Query(lQueryString, pUid)
 	if lErr != nil {
-		pDebug.Log(helpers.Elog, "ILD001", lErr.Error())
+		pDebug.Log(helpers.Elog, "CUID001", lErr.Error())
 		return Status, lErr
 	}
 	for lRows.Next() {
 		lErr = lRows.Scan(&lExist)
 		if lErr != nil {
-			pDebug.Log(helpers.Elog, "ILD002", lErr.Error())
+			pDebug.Log(helpers.Elog, "CUID002", lErr.Error())
 			return Status, lErr
 		}
 	}
@@ -246,4 +249,89 @@ func CheckUidInTable(pDebug *helpers.HelperStruct, pTableName, pUid string) (boo
 	}
 	pDebug.Log(helpers.Statement, "CheckUidInTable (+)")
 	return Status, nil
+}
+
+// --------------------------------------------------------------------
+// GET IFSC DETAILS FROM RAZORPAY
+// --------------------------------------------------------------------
+
+type IFSCResponse struct {
+	MICR     string `json:"MICR"`
+	Bank     string `json:"BANK"`
+	IFSC     string `json:"IFSC"`
+	Branch   string `json:"BRANCH"`
+	Address  string `json:"ADDRESS"`
+	Contact  string `json:"CONTACT"`
+	City     string `json:"CITY"`
+	District string `json:"DISTRICT"`
+	State    string `json:"STATE"`
+	BankCode string `json:"BANKCODE"`
+}
+
+func GetIFSCDetails(pDebug *helpers.HelperStruct, pIFSC string, pUid string) (IFSCResponse, error) {
+	pDebug.Log(helpers.Statement, "GetIFSCDetails (+)")
+	// READ RUL FROM TOML
+	config := tomlread.ReadTomlConfig("toml/ApiCredentials.toml")
+	lUrl := fmt.Sprintf("%v", config.(map[string]interface{})["RazorPayURL"])
+
+	lFullUrl := lUrl + pIFSC
+
+	var lIfscResp IFSCResponse
+
+	// MAKE APICALL
+	lResp, lErr := http.Get(lFullUrl)
+	if lErr != nil {
+		pDebug.Log(helpers.Elog, "GIFSCD001", fmt.Errorf("HTTP request failed: %w", lErr))
+		return lIfscResp, lErr
+	}
+	defer lResp.Body.Close()
+
+	body, _ := io.ReadAll(lResp.Body)
+	lBodyStr := string(body)
+
+	// if lResp.StatusCode != 200 {
+	// 	pDebug.Log(helpers.Elog, "GIFSCD002", fmt.Errorf("invalid ifsc or error: %s", lResp.Status))
+	// 	return lIfscResp, fmt.Errorf("invalid ifsc or error: %s", lResp.Status)
+	// }
+
+	if lResp.StatusCode == http.StatusNotFound {
+		pDebug.Log(helpers.Elog, "GIFSCD002", fmt.Errorf("invalid IFSC code"))
+		return lIfscResp, fmt.Errorf("invalid IFSC code")
+	} else if lResp.StatusCode != http.StatusOK {
+		pDebug.Log(helpers.Elog, "GIFSCD003", fmt.Errorf("API returned error: %s", lResp.Status))
+		return lIfscResp, fmt.Errorf("API returned error: %s", lResp.Status)
+	}
+
+	// UNMARSHAL IFSC RESP STRUCT
+	if lErr := json.Unmarshal(body, &lIfscResp); lErr != nil {
+		pDebug.Log(helpers.Elog, "GIFSCD004", fmt.Errorf("JSON unmarshal failed: %s", lResp.Status))
+		return lIfscResp, fmt.Errorf("JSON unmarshal failed: %v", lErr)
+	}
+
+	// INSERT RESPONSE IN TABLE
+	lErr = InsertRazorpayResp(pDebug, lResp.StatusCode, lBodyStr, pUid, pIFSC)
+	if lErr != nil {
+		pDebug.Log(helpers.Elog, "GIFSCD005", lErr.Error())
+		return lIfscResp, lErr
+	}
+
+	pDebug.Log(helpers.Statement, "GetIFSCDetails (-)")
+	return lIfscResp, nil
+}
+
+func InsertRazorpayResp(pDebug *helpers.HelperStruct, pStatusCode int, pRespBody, pUid, pIFSC string) error {
+	pDebug.Log(helpers.Statement, "InsertRazorpayResp (+)")
+
+	lQueryString := `INSERT INTO razorpay_resplog
+					(Uid, ifsc, status_code, respBody, CreatedBy, createdDate)
+					VALUES( ?,  ?,  ?,  ?, 'AutoBot', now());`
+
+	_, lErr := database.Gdb.Exec(lQueryString, pUid, pIFSC, pStatusCode, pRespBody)
+	if lErr != nil {
+		pDebug.Log(helpers.Elog, "IRPAY001", lErr.Error())
+		return lErr
+	}
+
+	pDebug.Log(helpers.Statement, "InsertRazorpayResp (-)")
+	return nil
 }

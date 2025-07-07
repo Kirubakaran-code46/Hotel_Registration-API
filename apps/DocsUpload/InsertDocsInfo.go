@@ -165,10 +165,10 @@ func InsertDocumentInfo(pDebug *helpers.HelperStruct, r *http.Request, pReq comm
 	// INSERT DOCUMENT_UPLOAD TABLE
 
 	lQueryString := `INSERT INTO document_upload
-(Uid, Bank_Name, Account_Number, Acc_HolderName, IFSC_code, Branch, GST_Number, GST_docId, cancelledCheque_docId,propertyOwnership,Start_Date,End_Date, isActive, CreatedBy, createdDate, UpdatedBy, UpdatedDate)
-VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,'Y', 'AutoBot', now(),'AutoBot', now());`
+(Uid, Bank_Name, Account_Number, Acc_HolderName, IFSC_code, Branch, GST_Number, GST_docId, cancelledCheque_docId,propertyOwnership,Start_Date,End_Date,ifsc_city,ifsc_Address,ifsc_state, isActive, CreatedBy, createdDate, UpdatedBy, UpdatedDate)
+VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,'Y', 'AutoBot', now(),'AutoBot', now());`
 
-	_, lErr = database.Gdb.Exec(lQueryString, pReq.Uid, pReq.BankName, pReq.AccountNumber, pReq.AccHolderName, pReq.IFSC_Code, pReq.Branch, pReq.GST_Number, gstDocID, chequeDocID, pReq.PropertyOwnership, pReq.StartDate, pReq.EndDate)
+	_, lErr = database.Gdb.Exec(lQueryString, pReq.Uid, pReq.BankName, pReq.AccountNumber, pReq.AccHolderName, pReq.IFSC_Code, pReq.Branch, pReq.GST_Number, gstDocID, chequeDocID, pReq.PropertyOwnership, pReq.StartDate, pReq.EndDate, pReq.Ifsc_city, pReq.Ifsc_Address, pReq.Ifsc_State)
 
 	if lErr != nil {
 		pDebug.Log(helpers.Elog, "IDI006", lErr)
