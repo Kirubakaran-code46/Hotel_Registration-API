@@ -14,6 +14,7 @@ type Response struct {
 	Status     string   `json:"status"`
 	ErrMsg     string   `json:"errMsg"`
 	StateNames []string `json:"stateNames"`
+	CityNames  []string `json:"cityNames"`
 }
 
 func GetStateDropdown(w http.ResponseWriter, r *http.Request) {
@@ -29,13 +30,36 @@ func GetStateDropdown(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodGet {
 		var lResponse Response
-		var lStates string
-		var lStatesArr []string
+		var lCities string
+		var lCitiesArr []string
 
 		lResponse.Status = common.SUCCESSCODE
 
-		lCoreString := `SELECT State_Name
-						FROM indian_states where isActive='Y'`
+		// lCoreString := `SELECT State_Name
+		// 				FROM indian_states where isActive='Y'`
+
+		// lRows, lErr := database.Gdb.Query(lCoreString)
+
+		// if lErr != nil {
+		// 	lDebug.Log(helpers.Elog, "GSDAPI001", lErr.Error())
+		// 	fmt.Fprint(w, helpers.GetError_String("GSDAPI001", lErr.Error()))
+		// 	return
+		// }
+
+		// for lRows.Next() {
+		// 	lErr = lRows.Scan(&lStates)
+
+		// 	if lErr != nil {
+		// 		lDebug.Log(helpers.Elog, "GSDAPI002", lErr.Error())
+		// 		fmt.Fprint(w, helpers.GetError_String("GSDAPI002", lErr.Error()))
+		// 		return
+		// 	}
+		// 	lStatesArr = append(lStatesArr, lStates)
+		// }
+		// lResponse.StateNames = lStatesArr
+
+		// GET CITIES
+		lCoreString := `select name from city_station_mapping`
 
 		lRows, lErr := database.Gdb.Query(lCoreString)
 
@@ -46,16 +70,16 @@ func GetStateDropdown(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for lRows.Next() {
-			lErr = lRows.Scan(&lStates)
+			lErr = lRows.Scan(&lCities)
 
 			if lErr != nil {
 				lDebug.Log(helpers.Elog, "GSDAPI002", lErr.Error())
 				fmt.Fprint(w, helpers.GetError_String("GSDAPI002", lErr.Error()))
 				return
 			}
-			lStatesArr = append(lStatesArr, lStates)
+			lCitiesArr = append(lCitiesArr, lCities)
 		}
-		lResponse.StateNames = lStatesArr
+		lResponse.CityNames = lCitiesArr
 
 		lData, lErr := json.Marshal(lResponse)
 		if lErr != nil {

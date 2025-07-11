@@ -1,9 +1,18 @@
 #######################################
 
-#PyOlliv Db connection
-DBNAME = "PyOllivHotelRegistration"
-HOST="localhost"
-USER="root"
-PASSWORD="pyolliv"
-PORT="3306"
-DBTYPE="mariadb"
+#Registry Db connection
+REGDBNAME = "PyOllivHotelRegistration"
+REGHOST="localhost"
+REGUSER="root"
+REGPASSWORD="pyolliv"
+REGPORT="3306"
+REGDBTYPE="mariadb"
+
+
+#Admin Db connection
+ADMDBNAME = "adminflow"
+ADMHOST="localhost"
+ADMUSER="root"
+ADMPASSWORD="pyolliv"
+ADMPORT="3306"
+ADMDBTYPE="mariadb"

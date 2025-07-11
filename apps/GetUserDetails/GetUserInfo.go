@@ -182,7 +182,7 @@ func GetLocationInfo(pDebug *helpers.HelperStruct, pReq string) (common.Location
 
 	var lLocationInfo common.LocationDetailsStruct
 
-	lCoreString := `  SELECT Addr_line1, Addr_line2, State, City, Zip_Code
+	lCoreString := `  SELECT ifnull(Addr_line1,''), ifnull(Addr_line2,''), ifnull(State,''),ifnull(City,''), ifnull(Zip_Code,''),ifnull(District,'')
 					  FROM location_info where Uid = ? and isActive ='Y' order by id desc limit 1`
 
 	lRows, lErr := database.Gdb.Query(lCoreString, pReq)
@@ -193,7 +193,7 @@ func GetLocationInfo(pDebug *helpers.HelperStruct, pReq string) (common.Location
 	}
 
 	for lRows.Next() {
-		lErr = lRows.Scan(&lLocationInfo.AddrLine1, &lLocationInfo.AddrLine2, &lLocationInfo.State, &lLocationInfo.City, &lLocationInfo.Zipcode)
+		lErr = lRows.Scan(&lLocationInfo.AddrLine1, &lLocationInfo.AddrLine2, &lLocationInfo.State, &lLocationInfo.City, &lLocationInfo.Zipcode, &lLocationInfo.District)
 		if lErr != nil {
 			pDebug.Log(helpers.Elog, "GLI002", lErr.Error())
 			return lLocationInfo, lErr

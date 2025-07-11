@@ -64,7 +64,7 @@ func InsertBasicDetailsAPI(w http.ResponseWriter, r *http.Request) {
 
 			//  Set cookie
 			http.SetCookie(w, &http.Cookie{
-				Name:     "client_id",
+				Name:     common.UIDCOOKIENAME,
 				Value:    lclientId,
 				Path:     "/",
 				HttpOnly: false,

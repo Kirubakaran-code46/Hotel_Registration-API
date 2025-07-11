@@ -9,6 +9,9 @@ const (
 	EMAIL         = "EMAIL"
 	MOBILE        = "MOBILE"
 	UIDCOOKIENAME = "client_id"
+	// PRODUCTS
+	OLLIV    = "OLI"
+	OLLIVBRK = "BRK"
 )
 
 type BasicDetailsStruct struct {
@@ -29,6 +32,7 @@ type LocationDetailsStruct struct {
 	AddrLine1 string `json:"addrLine1"`
 	AddrLine2 string `json:"addrLine2"`
 	City      string `json:"city"`
+	District  string `json:"district"`
 	State     string `json:"state"`
 	Zipcode   string `json:"zipcode"`
 }
