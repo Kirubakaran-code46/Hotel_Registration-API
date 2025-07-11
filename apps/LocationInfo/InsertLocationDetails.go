@@ -78,10 +78,10 @@ func InsertLocationDetails(pDebug *helpers.HelperStruct, pReq common.LocationDet
 	} else {
 		// INSERT LOCATION INFO
 		lCoreString := `INSERT INTO location_info
-	(Uid, Addr_line1, Addr_line2, State, City, Zip_Code, CreatedBy, createdDate, UpdatedBy, UpdatedDate, isActive)
-	VALUES(?, ?, ?, ?, ?, ?, 'AutoBot', now(), 'AutoBot', now(), 'Y');`
+	(Uid, Addr_line1, Addr_line2, State, City, Zip_Code,District, CreatedBy, createdDate, UpdatedBy, UpdatedDate, isActive)
+	VALUES(?, ?, ?, ?, ?, ?, ?, 'AutoBot', now(), 'AutoBot', now(), 'Y');`
 
-		_, lErr = database.Gdb.Exec(lCoreString, pReq.Uid, pReq.AddrLine1, pReq.AddrLine2, pReq.State, pReq.City, pReq.Zipcode)
+		_, lErr = database.Gdb.Exec(lCoreString, pReq.Uid, pReq.AddrLine1, pReq.AddrLine2, pReq.State, pReq.City, pReq.Zipcode, pReq.District)
 
 		if lErr != nil {
 			pDebug.Log(helpers.Elog, "ILD003", lErr.Error())
@@ -98,10 +98,10 @@ func UpdateLocationDetails(pDebug *helpers.HelperStruct, pReq common.LocationDet
 	pDebug.Log(helpers.Statement, "UpdateLocationDetails (+)")
 
 	lCoreString := `UPDATE location_info
-SET  Addr_line1= ?, Addr_line2= ?, State= ?, City= ?, Zip_Code= ?, UpdatedBy='AutoBot', UpdatedDate= now()
+SET  Addr_line1= ?, Addr_line2= ?, State= ?, City= ?, Zip_Code= ?,District = ?, UpdatedBy='AutoBot', UpdatedDate= now()
 WHERE Uid = ?;`
 
-	_, lErr := database.Gdb.Exec(lCoreString, pReq.AddrLine1, pReq.AddrLine2, pReq.State, pReq.City, pReq.Zipcode, pReq.Uid)
+	_, lErr := database.Gdb.Exec(lCoreString, pReq.AddrLine1, pReq.AddrLine2, pReq.State, pReq.City, pReq.Zipcode, pReq.District, pReq.Uid)
 
 	if lErr != nil {
 		pDebug.Log(helpers.Elog, "ULD001", lErr.Error())

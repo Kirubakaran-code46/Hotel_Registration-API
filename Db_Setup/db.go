@@ -21,10 +21,12 @@ type DatabaseType struct {
 
 // structure to hold all db connection details used in this program
 type AllUsedDatabases struct {
-	SDTDB DatabaseType
+	REGISTRYDB DatabaseType
+	ADMINDB    DatabaseType
 }
 
 var Gdb *sql.DB
+var AdminGdb *sql.DB
 
 // ---------------------------------------------------------------------------------
 // function opens the db connection and return connection variable
@@ -36,25 +38,43 @@ func InitDb() {
 	var lErr error
 	var dataBaseConnection DatabaseType
 	// get connection details
-	if DbDetails.SDTDB.DB == "SDTDB" {
-		dataBaseConnection = DbDetails.SDTDB
+	if DbDetails.REGISTRYDB.DB == "REGISTRYDB" {
+		dataBaseConnection = DbDetails.REGISTRYDB
+
+		// Prepare connection string
+
+		prepareConnString := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", dataBaseConnection.User, dataBaseConnection.Password, dataBaseConnection.Server, dataBaseConnection.Port, dataBaseConnection.Database)
+
+		Gdb, lErr = sql.Open("mysql", prepareConnString)
+		if lErr != nil {
+			log.Fatalf("Error opening database: %v", lErr)
+		}
+
+		// Test connection
+		if lErr := Gdb.Ping(); lErr != nil {
+			log.Fatalf("Error connecting to database: %v", lErr)
+		}
+
 	}
-	// log.Println("localDBtype", localDBtype)
-	// log.Println("dataBaseConnection", dataBaseConnection)
 
-	// Prepare connection string
+	if DbDetails.ADMINDB.DB == "ADMINDB" {
+		dataBaseConnection = DbDetails.ADMINDB
 
-	prepareConnString := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", dataBaseConnection.User, dataBaseConnection.Password, dataBaseConnection.Server, dataBaseConnection.Port, dataBaseConnection.Database)
+		// Prepare connection string
 
-	Gdb, lErr = sql.Open("mysql", prepareConnString)
-	if lErr != nil {
-		log.Fatalf("Error opening database: %v", lErr)
+		prepareConnString := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", dataBaseConnection.User, dataBaseConnection.Password, dataBaseConnection.Server, dataBaseConnection.Port, dataBaseConnection.Database)
+
+		AdminGdb, lErr = sql.Open("mysql", prepareConnString)
+		if lErr != nil {
+			log.Fatalf("Error opening database: %v", lErr)
+		}
+
+		// Test connection
+		if lErr := AdminGdb.Ping(); lErr != nil {
+			log.Fatalf("Error connecting to database: %v", lErr)
+		}
 	}
 
-	// Test connection
-	if lErr := Gdb.Ping(); lErr != nil {
-		log.Fatalf("Error connecting to database: %v", lErr)
-	}
 }
 
 // --------------------------------------------------------------------

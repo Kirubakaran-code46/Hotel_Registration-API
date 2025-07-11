@@ -2,7 +2,7 @@ package main
 
 import (
 	apientry "HOTEL-REGISTRY_API/ApiEntry"
-	sdtdb "HOTEL-REGISTRY_API/Db_Setup"
+	GDB "HOTEL-REGISTRY_API/Db_Setup"
 	availabilityinfo "HOTEL-REGISTRY_API/apps/AvailabilityInfo"
 	basicinfo "HOTEL-REGISTRY_API/apps/BasicInfo"
 	description "HOTEL-REGISTRY_API/apps/Description"
@@ -30,9 +30,10 @@ func main() {
 	defer lLog.Close()
 	log.SetOutput(lLog)
 
-	sdtdb.InitDb()
+	GDB.InitDb()
 
-	defer sdtdb.Gdb.Close()
+	defer GDB.Gdb.Close()
+	defer GDB.AdminGdb.Close()
 
 	router := CreateRouter()
 

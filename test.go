@@ -1,19 +1,28 @@
 package main
 
 import (
-	s3filehandler "HOTEL-REGISTRY_API/common/S3FileHandler"
 	"HOTEL-REGISTRY_API/helpers"
-	"fmt"
+	"crypto/rand"
+	"math/big"
 )
 
 func main() {
 
-	lDebug := new(helpers.HelperStruct)
+}
 
-	file, err := s3filehandler.S3FileDownload(lDebug, "DOC20250704160627_3543.PNG")
-	if err != nil {
-		fmt.Println("###", err)
-	} else {
-		fmt.Println("file->", file)
+// Generate OTP
+func GenerateOTP(pDebug *helpers.HelperStruct, length int) (string, error) {
+	pDebug.Log(helpers.Statement, "GenerateOTP (+)")
+
+	const digits = "0123456789"
+	otp := ""
+	for i := 0; i < length; i++ {
+		randomInt, err := rand.Int(rand.Reader, big.NewInt(int64(len(digits))))
+		if err != nil {
+			return "", helpers.ErrReturn(err)
+		}
+		otp += string(digits[randomInt.Int64()])
 	}
+	pDebug.Log(helpers.Statement, "GenerateOTP (-)")
+	return otp, nil
 }
